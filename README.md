@@ -1,4 +1,6 @@
-# dice-lib
+# DICE Python Library
+
+Functions and Classes for the use on the Data Intensive Computing Environment (DICE).
 
 [![Actions Status][actions-badge]][actions-link]
 [![Documentation Status][rtd-badge]][rtd-link]
