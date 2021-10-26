@@ -44,17 +44,17 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Install Arrow
-      run: 
-        - DISTRO=$(lsb_release --codename --short)
-        - sudo add-apt-repository "deb [arch=amd64] http://dl.bintray.com/apache/arrow/ubuntu $DISTRO main"
-        - sudo apt-get install -y libarrow-dev libparquet-dev
+      run: |
+        DISTRO=$(lsb_release --codename --short)
+        sudo add-apt-repository "deb [arch=amd64] http://dl.bintray.com/apache/arrow/ubuntu $DISTRO main"
+        sudo apt-get install -y libarrow-dev libparquet-dev
       if: ${{ matrix.python-version  == 'pypy-3.7' }}
 
     - uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Install package
+    - name: Install arrow package
       run: python -m pip install .[test]
 
     - name: Test package
