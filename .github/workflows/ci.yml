@@ -35,20 +35,13 @@ jobs:
         python-version: ["3.6", "3.9"]
         runs-on: [ubuntu-latest, macos-latest, windows-latest]
 
-        include:
-        - python-version: pypy-3.7
-          runs-on: ubuntu-latest
+        # include:
+        # - python-version: pypy-3.7
+        #   runs-on: ubuntu-latest
 
 
     steps:
     - uses: actions/checkout@v2
-
-    - name: Install Arrow
-      run: |
-        DISTRO=$(lsb_release --codename --short)
-        sudo add-apt-repository "deb [arch=amd64] http://dl.bintray.com/apache/arrow/ubuntu $DISTRO main"
-        sudo apt-get install -y libarrow-dev libparquet-dev
-      if: ${{ matrix.python-version  == 'pypy-3.7' }}
 
     - uses: actions/setup-python@v2
       with:
