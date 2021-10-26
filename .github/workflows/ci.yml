@@ -43,6 +43,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Install Arrow
+      run: sudo apt-get install -y libarrow-dev
+      if: ${{ matrix.python-version  == 'pypy-3.7' }}
+
     - uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
