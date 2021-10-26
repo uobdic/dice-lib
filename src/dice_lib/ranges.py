@@ -1,6 +1,7 @@
 from itertools import count
 from typing import Iterable, Iterator
 
+
 def as_range(iterable: Iterable[int]) -> str:
     """From https://codereview.stackexchange.com/q/5196
     If {iterable} has at least two elements, return '{first}-{last}', otherwise '{first}'.
