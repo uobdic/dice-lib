@@ -5,7 +5,7 @@ from typing import Optional
 from plumbum import local
 from pyarrow.fs import HadoopFileSystem
 
-from .user import current_linux_user
+from .user import current_user
 
 
 def _maybe_set_hadoop_classpath() -> None:
@@ -60,7 +60,7 @@ class HDFS:
     ):
         self.hdfs_host = hdfs_host
         self.hdfs_port = hdfs_port
-        self.hdfs_user = current_linux_user() if hdfs_user is None else hdfs_user
+        self.hdfs_user = current_user() if hdfs_user is None else hdfs_user
         _maybe_set_hadoop_classpath()
         self.hdfs_fs = HadoopFileSystem(hdfs_host, hdfs_port, hdfs_user)
 

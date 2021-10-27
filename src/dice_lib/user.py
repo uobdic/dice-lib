@@ -1,4 +1,4 @@
-def current_linux_user() -> str:
+def current_user() -> str:
     """Returns current user name"""
     import os
 
