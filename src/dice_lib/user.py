@@ -2,4 +2,10 @@ def current_linux_user() -> str:
     """Returns current user name"""
     import os
 
-    return os.getlogin()
+    try:
+        # fails on WSL
+        username = os.getlogin()
+    except FileNotFoundError:
+        # works on WSL
+        username = os.environ["USER"]
+    return username
