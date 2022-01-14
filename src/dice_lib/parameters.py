@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 
 HDFS_FUSE_MOUNT: str = "/hdfs"
 STORAGE_MOUNT: str = "/storage"
@@ -20,5 +20,14 @@ SE_ENDPOINTS_2: Dict[str, str] = {
 }
 SE_MOUNT_POINT_2: str = "/xrootd"
 
-FTS_SERVER: str = "fts3-pilot.cern.ch"
-FTS_PORT: int = 8446
+FTS_SERVERS: List[str] = [
+    "fts3-pilot.cern.ch:8446",
+]
+
+GLOSSARY: Dict[str, str] = {
+    "CE": "Computing Element",
+    "DICE": "Data Intensive Computing Environment",
+    "FTS": "File Transfer Service",
+    "HDFS": "Hadoop Distributed File System",
+    "SE": "Storage Element",
+}
