@@ -22,3 +22,10 @@ def size_of_path(path: Path, size_cmd: BoundCommand) -> Tuple[str, int, float, s
 def size_of_paths(paths: List[Path]) -> List[Tuple[str, int, float, str]]:
     du = local["du"]
     return [size_of_path(path, lambda path: du["-s", path]()) for path in paths]
+
+
+def get_owner(path: str) -> str:
+    """
+    Returns the owner of the path.
+    """
+    return Path(path).owner()
