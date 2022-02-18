@@ -3,21 +3,23 @@ from typing import List, Tuple
 
 
 class FileSystem(ABC):
-
-    @abstractmethod
-    def size_of_path(path: str) -> Tuple[str, int, float, str]:
+    def __init__(self, path: str) -> None:
         ...
 
     @abstractmethod
-    def size_of_paths(paths: List[str]) -> List[Tuple[str, int, float, str]]:
+    def size_of_path(self, path: str) -> Tuple[str, int, float, str]:
         ...
 
     @abstractmethod
-    def get_owner(pathstr: str) -> str:
+    def size_of_paths(self, paths: List[str]) -> List[Tuple[str, int, float, str]]:
         ...
 
     @abstractmethod
-    def ls(self, path: str) -> list:
+    def get_owner(self, pathstr: str) -> str:
+        ...
+
+    @abstractmethod
+    def ls(self, path: str) -> List[str]:
         ...
 
     @abstractmethod

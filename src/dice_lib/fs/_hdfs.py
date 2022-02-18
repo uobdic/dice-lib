@@ -5,8 +5,9 @@ from typing import List, Optional, Tuple
 from plumbum import local
 from pyarrow.fs import HadoopFileSystem
 
-from ._base import FileSystem
 from ..user import current_user
+from ._base import FileSystem
+
 
 def _maybe_set_hadoop_classpath() -> None:
     """from https://github.com/apache/arrow/blob/master/python/pyarrow/hdfs.py"""
@@ -51,6 +52,7 @@ def _hadoop_classpath_glob(hadoop_bin: str) -> str:
     hadoop_classpath = hadoop["classpath", "--glob"]
     return str(hadoop_classpath())
 
+
 class HDFS(FileSystem):
     def __init__(
         self,
@@ -74,16 +76,16 @@ class HDFS(FileSystem):
         if self.hdfs_host is None or self.hdfs_port is None or self.hdfs_user is None:
             raise Exception("HDFS configuration is not set")
 
-    def size_of_path(path: str) -> Tuple[str, int, float, str]:
+    def size_of_path(self, path: str) -> Tuple[str, int, float, str]:
         ...
 
-    def size_of_paths(paths: List[str]) -> List[Tuple[str, int, float, str]]:
+    def size_of_paths(self, paths: List[str]) -> List[Tuple[str, int, float, str]]:
         ...
 
-    def get_owner(pathstr: str) -> str:
+    def get_owner(self, pathstr: str) -> str:
         ...
 
-    def ls(self, path: str) -> list:
+    def ls(self, path: str) -> List[str]:
         ...
 
     def mkdir(self, path: str) -> None:
