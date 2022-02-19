@@ -1,4 +1,4 @@
-from typing import Dict, Type
+from typing import Dict, List, Tuple, Type
 
 from ._base import FileSystem
 from ._davix import DavixFileSystem
@@ -39,3 +39,8 @@ def __deduce_fs_from_path(path: str) -> FileSystem:
 def get_owner(pathstr: str) -> str:
     fs = __deduce_fs_from_path(pathstr)
     return fs.get_owner(pathstr)
+
+
+def size_of_paths(paths: List[str]) -> List[Tuple[str, int, float, str]]:
+    fs = __deduce_fs_from_path(paths[0])
+    return fs.size_of_paths(paths)

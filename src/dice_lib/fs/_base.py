@@ -8,7 +8,11 @@ class FileSystem(ABC):
 
     @abstractmethod
     def size_of_path(self, path: str) -> Tuple[str, int, float, str]:
-        ...
+        """
+        Returns a tuple of (path, size_in_bytes, size_in_largest_unit, largest_unit) for a given path.
+        Largest unit is the largest unit where size is smaller than the scale of the next one.
+        Scale for sizes is 1024.
+        """
 
     @abstractmethod
     def size_of_paths(self, paths: List[str]) -> List[Tuple[str, int, float, str]]:
