@@ -37,3 +37,15 @@ class FileSystem(ABC):
     @abstractmethod
     def rm_recursive(self, path: str) -> None:
         ...
+
+    @abstractmethod
+    def copy(self, src: str, dest: str) -> None:
+        ...
+
+    @abstractmethod
+    def copy_recursive(self, src: str, dest: str) -> None:
+        ...
+
+    @abstractmethod
+    def move(self, src: str, dest: str) -> None:
+        ...
