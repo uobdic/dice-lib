@@ -39,6 +39,7 @@ classifiers = [
 dynamic = ["version"]
 dependencies = [
     "typing_extensions >=3.7; python_version<'3.8'",
+    "paramiko",
     "plumbum",
     "pyarrow>=5.0.0",
     "dnspython>=2.2.0",
@@ -53,7 +54,7 @@ dev = [
 ]
 docs = [
     "Sphinx~=3.0",
-     "myst_parser>=0.13",
+    "myst_parser>=0.13",
     "sphinx-book-theme>=0.1.0",
     "sphinx_copybutton",
 ]
