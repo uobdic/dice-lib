@@ -1,0 +1,147 @@
+---
+cluster_name: Data Intensive Computing Environment (DICE)
+documentation: https://wikis.bris.ac.uk/display/dic
+login_nodes:
+  - name: login001
+    group: particle physics
+    status: ONLINE
+  - name: login002
+    group: particle physics
+    status: OFFLINE
+  - name: login003
+    group: astro physics
+    status: ONLINE
+  - name: login004
+    group: astro physics
+    status: OFFLINE
+
+computing_grid:
+  site_name: UKI-SOUTHGRID-BRIS-HEP
+  cms_site_name: T2_UK_SGrid_Bristol
+  computing_elements:
+    lcgce01.phy.bris.ac.uk:
+      status: retired
+      ce_type: ARC CE
+    lcgce02.phy.bris.ac.uk:
+      status: active
+      ce_type: HTCondor CE
+  storage_elements:
+    lcgse01.phy.bris.ac.uk:
+      status: retired
+      se_type: DMLite SE
+      endpoints:
+        gsiftp: gsiftp://lcgse01.phy.bris.ac.uk:2811
+        xrootd: root://lcgse01.phy.bris.ac.uk/
+        webdav: davs://lcgse01.phy.bris.ac.uk:443
+      root_dir: "/dpm/phy.bris.ac.uk/home"
+    xrootd.phy.bris.ac.uk:
+      status: active
+      se_type: XRootD SE
+      endpoints:
+        xrootd: root://xrootd.phy.bris.ac.uk:1094/
+        webdav: davs://xrootd.phy.bris.ac.uk:1094
+      root_dir: "/xrootd"
+  FTS_SERVERS:
+  - fts3-pilot.cern.ch:8446
+
+storage:
+  hdfs:
+    extras:
+      HDFS_FUSE_MOUNT: "/hdfs"
+    mounts:
+      - "/hdfs"
+    binaries:
+      java: "/usr/bin/java"
+      hadoop: "/usr/bin/hadoop"
+      hdfs: "/usr/bin/hdfs"
+    env:
+      HADOOP_COMMON_HOME: "/opt/cloudera/parcels/CDH/lib/hadoop"
+      HADOOP_COMMON_DIR: "./"
+      HADOOP_COMMON_LIB_JARS_DIR: lib
+      HADOOP_COMMON_LIB_NATIVE_DIR: lib/native
+      HADOOP_CONF_DIR: "/etc/hadoop/conf"
+      HADOOP_TOOLS_HOME: "/opt/cloudera/parcels/CDH/lib/hadoop"
+      HADOOP_TOOLS_DIR: share/hadoop/tools
+      HADOOP_TOOLS_LIB_JARS_DIR: share/hadoop/tools/lib
+      JAVA_HOME: "/usr/java/jdk"
+  nfs:
+    mounts:
+    - "/software"
+    - "/users"
+    - "/usersc"
+  local:
+    mounts:
+    - "/storage"
+    - "/scratch"
+
+glossary:
+  CE: Computing Element
+  SE: Storage Element
+  FTS: File Transfer Service
+  HDFS: Hadoop Distributed File System
+  NFS: Network File System
+  DICE: Data Intensive Computing Environment
+
+site_info:
+  gocdb_name: UKI-SOUTHGRID-BRIS-HEP
+  hepspec06_baseline: 10
+  specfp2000_baseline: 2500
+  specint2000_baseline: 2500
+  cms_name: T2_UK_SGrid_Bristol
+  storage_element: lcgse01.phy.bris.ac.uk
+  argus_server: lcgarg.phy.bris.ac.uk
+  argus_port: 8154
+  cvmfs_mounts:
+    grid.cern.ch:
+      cvmfs_quota_limit: 1000
+    atlas.cern.ch:
+      cvmfs_quota_limit: 10000
+    cms.cern.ch:
+      cvmfs_quota_limit: 20000
+      cvmfs_env_variables:
+        CMS_LOCAL_SITE: T2_UK_SGrid_Bristol
+    lhcb.cern.ch:
+      cvmfs_quota_limit: 10000
+    ilc.desy.de:
+      cvmfs_quota_limit: 5000
+      cvmfs_public_key: "/etc/cvmfs/keys/desy.de.pub"
+      cvmfs_server_url: http://grid-cvmfs-one.desy.de:8000/cvmfs/@fqrn@;http://cvmfs-stratum-one.cern.ch:8000/cvmfs/@fqrn@;http://cvmfs-egi.gridpp.rl.ac.uk:8000/cvmfs/@fqrn@
+  supported_vos:
+  - alice
+  - atlas
+  - cms
+  - dune
+  - dteam
+  - gridpp
+  - ilc
+  - lhcb
+  - lsst
+  - lz
+  - mu3e.org
+  - ops
+  - vo.southgrid.ac.uk
+
+
+node_info:
+  service_accounts: service_accounts
+  service_name: DICE
+  owner_team: DICE
+  owner: ME
+  location: Bristol
+  building: The Big One
+  data_centre: The room with cooling
+  linked_service_tsm: THEM
+  hepspec06: 20
+  specfp2000: 5000
+  specint2000: 5000
+  cluster: dice
+  environment: production
+  generation: dice_phaseX
+  firewall: you_shall_not_pass
+  switch: gatekeeper
+  hardware_raid: true
+  position_in_rack: n/a
+  comments: ''
+  rack: 8
+  managed_network: true
+  accounting_scale_factor: 2

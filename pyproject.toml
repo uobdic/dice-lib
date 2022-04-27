@@ -27,7 +27,6 @@ classifiers = [
     "License :: OSI Approved :: BSD License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
@@ -38,11 +37,13 @@ classifiers = [
 
 dynamic = ["version"]
 dependencies = [
-    "typing_extensions >=3.7; python_version<'3.8'",
+    "dnspython>=2.2.0",
+    "htcondor<10.0.0",
+    "omegaconf>=2.1.2",
     "paramiko",
     "plumbum",
     "pyarrow>=5.0.0",
-    "dnspython>=2.2.0",
+    "typing_extensions >=3.7; python_version<'3.8'",
 ]
 
 [project.optional-dependencies]
@@ -79,7 +80,7 @@ all = true
 
 [tool.mypy]
 files = "src"
-python_version = "3.6"
+python_version = "3.7"
 warn_unused_configs = true
 
 disallow_any_generics = true

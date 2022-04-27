@@ -1,0 +1,62 @@
+from dataclasses import dataclass
+from enum import Enum
+from typing import Any, Dict, List, Optional
+
+
+class ServerStatus(Enum):
+    ONLINE = "online"
+    OFFLINE = "offline"
+    ACTIVE = "active"
+    RETIRED = "retired"
+    COMMISSIONING = "commissioning"
+    DECOMMISSIONING = "decommissioning"
+
+
+@dataclass
+class ComputingElement:
+    status: str
+    ce_type: str
+
+
+@dataclass
+class StorageElement:
+    status: str
+    se_type: str
+    endpoints: Dict[str, str]
+    root_dir: str
+
+
+@dataclass
+class ComputingGrid:
+    site_name: str
+    cms_site_name: str
+    computing_elements: Dict[str, ComputingElement]
+    storage_elements: Dict[str, StorageElement]
+    FTS_SERVERS: List[str]
+
+
+@dataclass
+class Storage:
+    mounts: List[str]
+    binaries: Optional[Dict[str, str]]
+    env: Optional[Dict[str, str]]
+    extras: Optional[Dict[str, Any]]
+
+
+@dataclass
+class LoginNode:
+    name: str
+    status: ServerStatus
+    group: str
+
+
+@dataclass
+class DiceConfig:
+    cluster_name: str
+    documentation: str
+    login_nodes: List[LoginNode]
+    computing_grid: ComputingGrid
+    storage: Dict[str, Storage]
+    glossary: Dict[str, str]
+    site_info: Dict[str, Any]
+    node_info: Dict[str, Any]
