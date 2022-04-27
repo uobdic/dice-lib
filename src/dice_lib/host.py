@@ -17,7 +17,7 @@ class HostCommand:
     default_processing_function: Callable[[str], str] = OUTPUT_PROCESSING_FUNCTIONS[
         "strip_final_newline"
     ]
-    output_processing: List[Callable[[str], str]] = field(default_factory=list)
+    output_processing: Optional[List[Callable[[str], str]]] = None
 
 
 @dataclass
@@ -30,7 +30,9 @@ class PuppetCommand(HostCommand):
     ):
         puppet_command = "puppet"
         puppet_parameters = ["agent", command] + (parameters or [])
-        super().__init__(puppet_command, puppet_parameters, output_processing)
+        super().__init__(
+            puppet_command, puppet_parameters, output_processing=output_processing
+        )
 
 
 @dataclass
@@ -43,10 +45,12 @@ class FacterCommand(HostCommand):
     ):
         facter_command = "facter"
         facter_parameters = [command] + (parameters or [])
-        super().__init__(facter_command, facter_parameters, output_processing)
+        super().__init__(
+            facter_command, facter_parameters, output_processing=output_processing
+        )
 
 
-HOST_PROPERTIES: Dict[str, Dict[str, HostCommand]] = {
+HOST_PROPERTIES: Dict[str, HostCommand] = {
     "hostname": HostCommand(command="hostname", parameters=["-s"]),
     "fqdn": HostCommand(command="hostname", parameters=["-f"]),
     "ip_addresses": HostCommand(
