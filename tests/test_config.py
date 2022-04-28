@@ -66,18 +66,21 @@ def test_computing_grid():
         {
             "site_name": "TEST",
             "cms_site_name": "TEST",
-            "computing_elements": {
-                "ce001": {
+            "computing_elements": [
+                {
+                    "name": "ce001",
                     "status": "active",
                     "ce_type": "ce",
                 },
-                "ce002": {
+                {
+                    "name": "ce002",
                     "status": "retired",
                     "ce_type": "ce",
                 },
-            },
-            "storage_elements": {
-                "se001": {
+            ],
+            "storage_elements": [
+                {
+                    "name": "se001",
                     "status": "active",
                     "se_type": "se",
                     "endpoints": {
@@ -86,7 +89,8 @@ def test_computing_grid():
                     },
                     "root_dir": "/dpm/phy.bris.ac.uk/home",
                 },
-                "se002": {
+                {
+                    "name": "se002",
                     "status": "retired",
                     "se_type": "se",
                     "endpoints": {
@@ -95,7 +99,7 @@ def test_computing_grid():
                     },
                     "root_dir": "/dpm/phy.bris.ac.uk/home",
                 },
-            },
+            ],
             "FTS_SERVERS": [
                 "fts1.lcg.cscs.ch",
                 "fts2.lcg.cscs.ch",
@@ -107,9 +111,9 @@ def test_computing_grid():
 
     assert merged_cfg.site_name == "TEST"
     assert merged_cfg.cms_site_name == "TEST"
-    assert merged_cfg.computing_elements.ce001.status == "active"
-    assert merged_cfg.computing_elements.ce001.ce_type == "ce"
-    assert merged_cfg.computing_elements.ce002.status == "retired"
+    assert merged_cfg.computing_elements[0].status == "active"
+    assert merged_cfg.computing_elements[0].ce_type == "ce"
+    assert merged_cfg.computing_elements[1].status == "retired"
     assert len(merged_cfg.FTS_SERVERS) == 2
 
 

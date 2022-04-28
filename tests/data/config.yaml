@@ -19,14 +19,14 @@ computing_grid:
   site_name: UKI-SOUTHGRID-BRIS-HEP
   cms_site_name: T2_UK_SGrid_Bristol
   computing_elements:
-    lcgce01.phy.bris.ac.uk:
+    - name: lcgce01.phy.bris.ac.uk
       status: retired
       ce_type: ARC CE
-    lcgce02.phy.bris.ac.uk:
+    - name: lcgce02.phy.bris.ac.uk
       status: active
       ce_type: HTCondor CE
   storage_elements:
-    lcgse01.phy.bris.ac.uk:
+    - name: lcgse01.phy.bris.ac.uk
       status: retired
       se_type: DMLite SE
       endpoints:
@@ -34,7 +34,7 @@ computing_grid:
         xrootd: root://lcgse01.phy.bris.ac.uk/
         webdav: davs://lcgse01.phy.bris.ac.uk:443
       root_dir: "/dpm/phy.bris.ac.uk/home"
-    xrootd.phy.bris.ac.uk:
+    - name: xrootd.phy.bris.ac.uk
       status: active
       se_type: XRootD SE
       endpoints:
@@ -48,6 +48,17 @@ storage:
   hdfs:
     extras:
       HDFS_FUSE_MOUNT: "/hdfs"
+      FSTAB_ENTRY: "hadoop-fuse-dfs#dfs://hdfs_service /hdfs fuse allow_other,ro,rdbuffer=1310720 0 0"
+      INSTALL_INSTRUCTIONS:
+        HADOOP_TARBALL_URL: "http://www.hdfgroup.org/ftp/HDF5/current/src/hadoop-0.20.2.tar.gz"
+        CONFIG_TARBALL_URL: "http://www.hdfgroup.org/ftp/HDF5/current/src/hadoop-0.20.2-dev-config.tar.gz"
+        DOWNLOAD_DESTINATION: "/opt/cloudera/parcels"
+        EXTRACT_DESTINATION: "/opt/cloudera/parcels"
+        CONFIG_DESTINATION: "/etc/hadoop/conf"
+        SYMLINKS:
+          "/usr/local/hadoop": "/hdfs/hadoop"
+          "/usr/local/hadoop-0.20.2": "/hdfs/hadoop"
+          "/usr/local/hadoop-0.20.2/bin": "/hdfs/hadoop/bin"
     mounts:
       - "/hdfs"
     binaries:

@@ -14,12 +14,14 @@ class ServerStatus(Enum):
 
 @dataclass
 class ComputingElement:
+    name: str
     status: str
     ce_type: str
 
 
 @dataclass
 class StorageElement:
+    name: str
     status: str
     se_type: str
     endpoints: Dict[str, str]
@@ -30,8 +32,8 @@ class StorageElement:
 class ComputingGrid:
     site_name: str
     cms_site_name: str
-    computing_elements: Dict[str, ComputingElement]
-    storage_elements: Dict[str, StorageElement]
+    computing_elements: List[ComputingElement]
+    storage_elements: List[StorageElement]
     FTS_SERVERS: List[str]
 
 
