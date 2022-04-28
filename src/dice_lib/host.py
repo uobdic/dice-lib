@@ -14,10 +14,16 @@ OUTPUT_PROCESSING_FUNCTIONS = {
 class HostCommand:
     command: str
     parameters: List[str] = field(default_factory=list)
-    default_processing_function: Callable[[str], str] = OUTPUT_PROCESSING_FUNCTIONS[
-        "strip_final_newline"
-    ]
-    output_processing: Optional[List[Callable[[str], str]]] = None
+    default_processing_function: Callable[[str], str] = field(
+        repr=False, default=OUTPUT_PROCESSING_FUNCTIONS["strip_final_newline"]
+    )
+    output_processing: Optional[List[Callable[[str], str]]] = field(
+        repr=False, default=None
+    )
+
+    def __repr__(self) -> str:
+        params = " ".join(self.parameters)
+        return f"{self.command} {params}"
 
 
 @dataclass
