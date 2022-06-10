@@ -4,9 +4,8 @@ import pytest
 from omegaconf import OmegaConf
 
 import dice_lib._config as config
-import dice_lib.parameters as params
 
-FOUND_CFG = Path(params.DEFAULT_DICE_CONFIG_PATH).exists()
+FOUND_CFG = Path(config.DEFAULT_DICE_CONFIG_PATH).exists()
 
 
 @pytest.fixture
