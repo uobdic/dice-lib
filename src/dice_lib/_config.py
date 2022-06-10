@@ -1,6 +1,11 @@
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
 from typing import Any, Dict, List, Optional
+
+from omegaconf import OmegaConf
+
+DEFAULT_DICE_CONFIG_PATH = "/etc/dice/config.yaml"
 
 
 class ServerStatus(Enum):
@@ -62,3 +67,15 @@ class DiceConfig:
     glossary: Dict[str, str]
     site_info: Dict[str, Any]
     node_info: Dict[str, Any]
+
+
+def load_config(config_file: str = DEFAULT_DICE_CONFIG_PATH) -> Any:
+    path = Path(config_file)
+    if not path.exists():
+        raise FileNotFoundError(
+            f"DICE config, {config_file}, does not exist. Please contact dice-admin"
+        )
+    schema = OmegaConf.structured(DiceConfig)
+    conf = OmegaConf.load(path)
+    merged_conf = OmegaConf.merge(schema, conf)
+    return merged_conf
