@@ -48,6 +48,8 @@ class Storage:
     binaries: Optional[Dict[str, str]]
     env: Optional[Dict[str, str]]
     extras: Optional[Dict[str, Any]]
+    protocol: Optional[str] = "file://"
+    remove_mount_for_native_access: Optional[bool] = False
 
 
 @dataclass

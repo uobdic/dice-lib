@@ -46,6 +46,8 @@ computing_grid:
 
 storage:
   hdfs:
+    protocol: hdfs://
+    remove_mount_for_native_access: true
     extras:
       HDFS_FUSE_MOUNT: "/hdfs"
       FSTAB_ENTRY: "hadoop-fuse-dfs#dfs://hdfs_service /hdfs fuse allow_other,ro,rdbuffer=1310720 0 0"
@@ -76,11 +78,13 @@ storage:
       HADOOP_TOOLS_LIB_JARS_DIR: share/hadoop/tools/lib
       JAVA_HOME: "/usr/java/jdk"
   nfs:
+    protocol: "nfs://"
     mounts:
     - "/software"
     - "/users"
     - "/usersc"
   local:
+    protocol: "file://"
     mounts:
     - "/storage"
     - "/scratch"
