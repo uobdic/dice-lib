@@ -1,16 +1,10 @@
 from pathlib import Path
 
-import pytest
 from omegaconf import OmegaConf
 
 import dice_lib._config as config
 
 FOUND_CFG = Path(config.DEFAULT_DICE_CONFIG_PATH).exists()
-
-
-@pytest.fixture
-def config_path():
-    return "tests/data/config.yaml"
 
 
 def test_server_status():
