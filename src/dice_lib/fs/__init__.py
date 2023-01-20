@@ -18,6 +18,8 @@ FACTORIES: Dict[str, Type[FileSystem]] = {
     "Default": PosixFileSystem,
 }
 
+MountSettings = Dict[str, Any]
+
 __all__ = [
     "FileSystem",
     "DavixFileSystem",
@@ -32,21 +34,11 @@ __all__ = [
 def __deduce_fs_from_path(path: str) -> FileSystem:
     for prefix, factory in FACTORIES.items():
         if path.startswith(prefix):
-            return factory(path)
-    return FACTORIES["Default"](path)
+            return factory()
+    return FACTORIES["Default"]()
 
 
-def get_owner(pathstr: str) -> str:
-    fs = __deduce_fs_from_path(pathstr)
-    return fs.get_owner(pathstr)
-
-
-def size_of_paths(paths: List[str]) -> List[Tuple[str, int, float, str]]:
-    fs = __deduce_fs_from_path(paths[0])
-    return fs.size_of_paths(paths)
-
-
-def get_mount_settings_from_config(config: Dict[str, Any]) -> Dict[str, Any]:
+def get_mount_settings_from_config(config: Dict[str, Any]) -> MountSettings:
     mount_settings = {}
     storage = config.get("storage", {})
     for settings in storage.values():
@@ -67,7 +59,7 @@ def get_mount_settings_from_config(config: Dict[str, Any]) -> Dict[str, Any]:
     return mount_settings
 
 
-def prepare_paths(paths: List[str], mount_settings: Dict[str, Any]) -> List[str]:
+def prepare_paths(paths: List[str], mount_settings: MountSettings) -> List[str]:
     """
     1. Remove trailing slashes from paths
     2. lookup file system mounts
@@ -87,3 +79,17 @@ def prepare_paths(paths: List[str], mount_settings: Dict[str, Any]) -> List[str]
                     path = path[len(mount) :]
                 processed_paths[processed_paths.index(original_path)] = protocol + path
     return processed_paths
+
+
+def get_owner(pathstr: str, mount_settings: MountSettings) -> str:
+    pathstr = prepare_paths([pathstr], mount_settings)[0]
+    fs = __deduce_fs_from_path(pathstr)
+    return fs.get_owner(pathstr)
+
+
+def size_of_paths(
+    paths: List[str], mount_settings: MountSettings
+) -> List[Tuple[str, int, float, str]]:
+    paths = prepare_paths(paths, mount_settings)
+    fs = __deduce_fs_from_path(paths[0])
+    return fs.size_of_paths(paths)

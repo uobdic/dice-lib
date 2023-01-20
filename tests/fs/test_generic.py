@@ -1,7 +1,7 @@
 import pytest
 
 from dice_lib import load_config
-from dice_lib.fs import get_mount_settings_from_config, prepare_paths
+from dice_lib.fs import get_mount_settings_from_config, get_owner, prepare_paths
 
 
 @pytest.mark.parametrize(
@@ -30,6 +30,7 @@ def test_get_mount_settings_from_config(config_path, mount, mount_settings):
         ("/hdfs/user/username", "hdfs:///user/username"),
         ("/storage/user/username", "file:///storage/user/username"),
         ("/software/user/username", "nfs:///software/user/username"),
+        ("nfs:///software/user/username", "nfs:///software/user/username"),
     ],
 )
 def test_prepare_paths(config_path, path, expected):
@@ -37,3 +38,16 @@ def test_prepare_paths(config_path, path, expected):
     mount_settings = get_mount_settings_from_config(config)
     prepared_paths = prepare_paths([path], mount_settings)
     assert prepared_paths[0] == expected
+
+
+@pytest.mark.parametrize(
+    "path, expected",
+    [
+        ("/tmp", "root"),
+    ],
+)
+def test_get_owner(config_path, path, expected):
+    config = load_config(config_path)
+    mount_settings = get_mount_settings_from_config(config)
+    owner = get_owner(path, mount_settings)
+    assert owner == expected

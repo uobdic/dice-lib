@@ -6,7 +6,7 @@ from plumbum import local
 from pyarrow.fs import HadoopFileSystem
 
 from ..user import current_user
-from ._base import FileSystem
+from ._base import FileSystem, LsFormat
 
 
 def _maybe_set_hadoop_classpath() -> None:
@@ -65,6 +65,7 @@ class HDFS(FileSystem):
         self.hdfs_user = current_user() if hdfs_user is None else hdfs_user
         _maybe_set_hadoop_classpath()
         self.hdfs_fs = HadoopFileSystem(host=hdfs_host, port=hdfs_port)
+        self._protocol = "hdfs://"
 
     def _setup_env(self) -> None:
         import os
@@ -85,7 +86,7 @@ class HDFS(FileSystem):
     def get_owner(self, pathstr: str) -> str:
         ...
 
-    def ls(self, path: str) -> List[str]:
+    def ls(self, path: str) -> LsFormat:
         ...
 
     def mkdir(self, path: str) -> None:
