@@ -1,7 +1,7 @@
 from ._config import load_config
 from .glossary import GLOSSARY
 
-__version__ = "0.4.0"
+__version__ = "0.4.1"
 
 
 __all__ = (
