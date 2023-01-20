@@ -1,5 +1,6 @@
 from typing import Any, Dict, List, Tuple, Type
 
+from .._config import DEFAULT_DICE_CONFIG_PATH, load_config
 from ._base import FileSystem
 from ._davix import DavixFileSystem
 from ._gridftp import GridFTPFileSystem
@@ -31,7 +32,7 @@ __all__ = [
 ]
 
 
-def __deduce_fs_from_path(path: str) -> FileSystem:
+def _deduce_fs_from_path(path: str) -> FileSystem:
     for prefix, factory in FACTORIES.items():
         if path.startswith(prefix):
             return factory()
@@ -81,15 +82,17 @@ def prepare_paths(paths: List[str], mount_settings: MountSettings) -> List[str]:
     return processed_paths
 
 
-def get_owner(pathstr: str, mount_settings: MountSettings) -> str:
-    pathstr = prepare_paths([pathstr], mount_settings)[0]
-    fs = __deduce_fs_from_path(pathstr)
-    return fs.get_owner(pathstr)
+class FSClient:
+    def __init__(self, config_path: str = DEFAULT_DICE_CONFIG_PATH):
+        config = load_config(config_path)
+        self.mount_settings = get_mount_settings_from_config(config)
 
+    def get_owner(self, pathstr: str) -> str:
+        pathstr = prepare_paths([pathstr], self.mount_settings)[0]
+        fs = _deduce_fs_from_path(pathstr)
+        return fs.get_owner(pathstr)
 
-def size_of_paths(
-    paths: List[str], mount_settings: MountSettings
-) -> List[Tuple[str, int, float, str]]:
-    paths = prepare_paths(paths, mount_settings)
-    fs = __deduce_fs_from_path(paths[0])
-    return fs.size_of_paths(paths)
+    def size_of_paths(self, paths: List[str]) -> List[Tuple[str, int, float, str]]:
+        paths = prepare_paths(paths, self.mount_settings)
+        fs = _deduce_fs_from_path(paths[0])
+        return fs.size_of_paths(paths)

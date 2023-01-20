@@ -1,7 +1,7 @@
 import pytest
 
 from dice_lib import load_config
-from dice_lib.fs import get_mount_settings_from_config, get_owner, prepare_paths
+from dice_lib.fs import FSClient, get_mount_settings_from_config, prepare_paths
 
 
 @pytest.mark.parametrize(
@@ -47,7 +47,6 @@ def test_prepare_paths(config_path, path, expected):
     ],
 )
 def test_get_owner(config_path, path, expected):
-    config = load_config(config_path)
-    mount_settings = get_mount_settings_from_config(config)
-    owner = get_owner(path, mount_settings)
+    fs = FSClient(config_path)
+    owner = fs.get_owner(path)
     assert owner == expected
