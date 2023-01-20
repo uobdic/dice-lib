@@ -35,20 +35,8 @@ class PosixFileSystem(FileSystem):
         total_scaled, unit = convert_to_largest_unit(total, "B", scale=1024)
         return str(path), total, total_scaled, unit
 
-    def __size_of_path(
-        self, path: str, size_cmd: BoundCommand
-    ) -> Tuple[str, int, float, str]:
-        tmp = self._size_cmd
-        self._size_cmd = size_cmd
-        result = self.size_of_path(path)
-        self._size_cmd = tmp
-        return result
-
     def size_of_paths(self, paths: List[str]) -> List[Tuple[str, int, float, str]]:
-        return [
-            self.__size_of_path(path, lambda path: self._size_cmd[path]())
-            for path in paths
-        ]
+        return [self.size_of_path(path) for path in paths]
 
     def copy(self, src: str, dest: str) -> None:
         self._copy_cmd(src, dest)
