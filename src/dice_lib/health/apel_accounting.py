@@ -59,8 +59,8 @@ if __name__ == "__main__":
 
     pub_test, pub_test_msg = check_apel_publication_test(site_name)
     msg = "OK" if pub_test else "NOT OK: " + pub_test_msg
-    print(f"Publication test status: {msg}")  # noqa: T001
+    print(f"Publication test status: {msg}")
 
     sync_test, sync_test_msg = check_apel_sync_data(site_name)
     msg = "OK" if sync_test else "NOT OK: " + sync_test_msg
-    print(f"Synchronisation test status: {msg}")  # noqa: T001
+    print(f"Synchronisation test status: {msg}")
