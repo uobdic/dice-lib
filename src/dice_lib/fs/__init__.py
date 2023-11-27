@@ -1,4 +1,5 @@
-from typing import Any, Dict, List, Tuple, Type
+from pathlib import Path
+from typing import Any, Dict, List, Tuple, Type, Union
 
 from .._config import DEFAULT_DICE_CONFIG_PATH, load_config
 from ._base import FileSystem
@@ -32,9 +33,9 @@ __all__ = [
 ]
 
 
-def _deduce_fs_from_path(path: str) -> FileSystem:
+def _deduce_fs_from_path(path: Union[str, Path]) -> FileSystem:
     for prefix, factory in FACTORIES.items():
-        if path.startswith(prefix):
+        if str(path).startswith(prefix):
             return factory()
     return FACTORIES["Default"]()
 
