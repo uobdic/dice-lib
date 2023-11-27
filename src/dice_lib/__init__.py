@@ -1,7 +1,7 @@
 from ._config import load_config
 from .glossary import GLOSSARY
 
-__version__ = "2023.07.11"
+__version__ = "2023.11.1"
 
 
 __all__ = (
