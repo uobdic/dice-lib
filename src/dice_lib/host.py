@@ -67,7 +67,7 @@ HOST_PROPERTIES: Dict[str, HostCommand] = {
         ],
     ),
     "os_type": HostCommand(command="uname", parameters=["-s"]),
-    "Operating System": HostCommand(command="cat", parameters=["/etc/redhat-release"]),
+    "Operating System": HostCommand(command="cat", parameters=["/etc/os-release"]),
     "domain": HostCommand(command="hostname", parameters=["-d"]),
     "kernel": HostCommand(command="uname", parameters=["-r"]),
     "architecture": HostCommand(command="uname", parameters=["-m"]),
