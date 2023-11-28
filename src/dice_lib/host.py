@@ -145,3 +145,30 @@ def current_fqdn() -> str:
     import socket
 
     return socket.getfqdn()
+
+
+def execute_local_commands(commands: Dict[str, HostCommand]) -> Dict[str, str]:
+    """
+    Executes a dictionary of commands on a local host.
+    Returns a dictionary of outputs of these commands.
+    e.g.
+       commands = {
+           "hostname": HostCommand(command="hostname", args=["-s"]),
+           "fqdn": HostCommand(command="hostname", args=["-f"]),
+       }
+    will return:
+       {  "hostname": "<result of 'hostname -s' command>",
+          "fqdn": "<result of 'hostname -f' command>",
+       }
+    """
+    from plumbum import local
+
+    results = {}
+    for name, command in commands.items():
+        results[name] = local[command.command](*command.parameters)
+        results[name] = command.default_processing_function(results[name])
+        if command.output_processing:
+            for func in command.output_processing:
+                results[name] = func(results[name])
+
+    return results
