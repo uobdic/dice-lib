@@ -21,14 +21,14 @@ computing_grid:
   computing_elements:
     - name: lcgce01.phy.bris.ac.uk
       status: retired
-      ce_type: ARC CE
+      type: ARC CE
     - name: lcgce02.phy.bris.ac.uk
       status: active
-      ce_type: HTCondor CE
+      type: HTCondor CE
   storage_elements:
     - name: lcgse01.phy.bris.ac.uk
       status: retired
-      se_type: DMLite SE
+      type: DMLite SE
       endpoints:
         gsiftp: gsiftp://lcgse01.phy.bris.ac.uk:2811
         xrootd: root://lcgse01.phy.bris.ac.uk/
@@ -36,7 +36,7 @@ computing_grid:
       root_dir: "/dpm/phy.bris.ac.uk/home"
     - name: xrootd.phy.bris.ac.uk
       status: active
-      se_type: XRootD SE
+      type: XRootD SE
       endpoints:
         xrootd: root://xrootd.phy.bris.ac.uk:1094/
         webdav: davs://xrootd.phy.bris.ac.uk:1094

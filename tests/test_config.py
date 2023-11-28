@@ -20,21 +20,21 @@ def test_computing_element():
     cfg = OmegaConf.create(
         {
             "status": "active",
-            "ce_type": "ce",
+            "type": "ce",
         }
     )
     schema = OmegaConf.structured(config.ComputingElement)
     merged_cfg = OmegaConf.merge(schema, cfg)
 
     assert merged_cfg.status == "active"
-    assert merged_cfg.ce_type == "ce"
+    assert merged_cfg.type == "ce"
 
 
 def test_storage_element():
     cfg = OmegaConf.create(
         {
             "status": "active",
-            "se_type": "se",
+            "type": "se",
             "endpoints": {
                 "gsiftp": "gsiftp://lcgse01.phy.bris.ac.uk:2811",
                 "xrootd": "root://lcgse01.phy.bris.ac.uk/",
@@ -46,7 +46,7 @@ def test_storage_element():
     merged_cfg = OmegaConf.merge(schema, cfg)
 
     assert merged_cfg.status == "active"
-    assert merged_cfg.se_type == "se"
+    assert merged_cfg.type == "se"
     assert merged_cfg.endpoints == {
         "gsiftp": "gsiftp://lcgse01.phy.bris.ac.uk:2811",
         "xrootd": "root://lcgse01.phy.bris.ac.uk/",
@@ -63,19 +63,19 @@ def test_computing_grid():
                 {
                     "name": "ce001",
                     "status": "active",
-                    "ce_type": "ce",
+                    "type": "ce",
                 },
                 {
                     "name": "ce002",
                     "status": "retired",
-                    "ce_type": "ce",
+                    "type": "ce",
                 },
             ],
             "storage_elements": [
                 {
                     "name": "se001",
                     "status": "active",
-                    "se_type": "se",
+                    "type": "se",
                     "endpoints": {
                         "gsiftp": "gsiftp://lcgse01.phy.bris.ac.uk:2811",
                         "xrootd": "root://lcgse01.phy.bris.ac.uk/",
@@ -85,7 +85,7 @@ def test_computing_grid():
                 {
                     "name": "se002",
                     "status": "retired",
-                    "se_type": "se",
+                    "type": "se",
                     "endpoints": {
                         "gsiftp": "gsiftp://lcgse01.phy.bris.ac.uk:2811",
                         "xrootd": "root://lcgse01.phy.bris.ac.uk/",
@@ -105,7 +105,7 @@ def test_computing_grid():
     assert merged_cfg.site_name == "TEST"
     assert merged_cfg.cms_site_name == "TEST"
     assert merged_cfg.computing_elements[0].status == "active"
-    assert merged_cfg.computing_elements[0].ce_type == "ce"
+    assert merged_cfg.computing_elements[0].type == "ce"
     assert merged_cfg.computing_elements[1].status == "retired"
     assert len(merged_cfg.FTS_SERVERS) == 2
 
