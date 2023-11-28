@@ -33,7 +33,11 @@ class PosixFileSystem(FileSystem):
     def get_owner(self, pathstr: str) -> str:
         pathstr = self._remove_protocol(pathstr)
         path = Path(pathstr)
-        return path.owner()
+        try:
+            owner = path.owner()
+        except KeyError:
+            owner = "unknown"
+        return owner
 
     def size_of_path(self, path: str) -> Tuple[str, int, float, str]:
         path = self._remove_protocol(path)
