@@ -21,14 +21,14 @@ class ServerStatus(Enum):
 class ComputingElement:
     name: str
     status: str
-    ce_type: str
+    type: str
 
 
 @dataclass
 class StorageElement:
     name: str
     status: str
-    se_type: str
+    type: str
     endpoints: Dict[str, str]
     root_dir: str
 
