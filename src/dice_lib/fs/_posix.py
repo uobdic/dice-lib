@@ -11,6 +11,8 @@ from ._base import FileSystem, LsFormat
 
 
 class PosixFileSystem(FileSystem):
+    protocol: str = "file://"
+
     def __init__(self) -> None:
         # command definitions
         self._size_cmd: BoundCommand = local["nice"]["-n19", "du"]["-s"]
@@ -25,29 +27,39 @@ class PosixFileSystem(FileSystem):
             x, "%Y-%m-%d %H:%M"
         )
 
+    def _remove_protocol(self, path: str) -> str:
+        return path.replace(self.protocol, "")
+
     def get_owner(self, pathstr: str) -> str:
+        pathstr = self._remove_protocol(pathstr)
         path = Path(pathstr)
         return path.owner()
 
     def size_of_path(self, path: str) -> Tuple[str, int, float, str]:
+        path = self._remove_protocol(path)
         total, _ = self._size_cmd(path).split()
         total = int(total)
         total_scaled, unit = convert_to_largest_unit(total, "B", scale=1024)
         return str(path), total, total_scaled, unit
 
     def size_of_paths(self, paths: List[str]) -> List[Tuple[str, int, float, str]]:
+        # TODO: should be able to do this in parallel
         return [self.size_of_path(path) for path in paths]
 
     def copy(self, src: str, dest: str) -> None:
+        src, dest = self._remove_protocol(src), self._remove_protocol(dest)
         self._copy_cmd(src, dest)
 
     def copy_recursive(self, src: str, dest: str) -> None:
+        src, dest = self._remove_protocol(src), self._remove_protocol(dest)
         self._copy_recursive_cmd(src, dest)
 
     def move(self, src: str, dest: str) -> None:
+        src, dest = self._remove_protocol(src), self._remove_protocol(dest)
         self._move_cmd(src, dest)
 
     def ls(self, path: str) -> LsFormat:
+        path = self._remove_protocol(path)
         cmd_output = self._ls_cmd(path)
         # skip first 3 lines (total, ., ..) and last line (empty)
         lines = cmd_output.split("\n")[3:-1]
@@ -85,10 +97,13 @@ class PosixFileSystem(FileSystem):
         )
 
     def mkdir(self, path: str) -> None:
+        path = self._remove_protocol(path)
         self._mkdir_cmd(path)
 
     def rm(self, path: str) -> None:
+        path = self._remove_protocol(path)
         self._rm_cmd(path)
 
     def rm_recursive(self, path: str) -> None:
+        path = self._remove_protocol(path)
         self._rm_recursive_cmd(path)
