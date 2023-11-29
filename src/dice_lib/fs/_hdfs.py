@@ -1,8 +1,10 @@
 import xml.etree.ElementTree as ET
 from typing import Any, List, Optional, Tuple
 
+import pyhdfs
 
 from ..logger import log
+from ..units import convert_to_largest_unit
 from ..user import current_user
 from ._base import FileSystem, LsFormat
 
@@ -34,8 +36,6 @@ def __get_namenodes() -> list[str]:
 
 def get_hdfs_client(user: str) -> Any:
     """Retrieving the HDFS client to execute operations on HDFS."""
-    import pyhdfs
-
     namenodes = __get_namenodes()
     log.debug("Connecting to HDFS via %s", namenodes)
     client = pyhdfs.HdfsClient(namenodes, user_name=user)  # can throw AssertionError
@@ -44,6 +44,7 @@ def get_hdfs_client(user: str) -> Any:
 
 class HDFS(FileSystem):
     protocol: str = "hdfs://"
+    fs: pyhdfs.HdfsClient
 
     def __init__(
         self,
@@ -62,13 +63,47 @@ class HDFS(FileSystem):
         return [self.size_of_path(path) for path in paths]
 
     def get_owner(self, pathstr: str) -> str:
-        status = self.status(pathstr)
-        return status.owner
+        from pyhdfs import FileStatus
+
+        status: FileStatus = self.status(pathstr)
+        return str(status.owner)
 
     def ls(self, path: str) -> LsFormat:
-        return self.fs.listdir(path)
+        paths = self.fs.listdir(path)
+        permissions = []
+        owner = []
+        group = []
+        size = []
+        size_scaled = []
+        unit = []
+        date = []
+        name = []
+        for path in paths:
+            status = self.fs.status(path)
+            permissions.append(status.permission)
+            owner.append(status.owner)
+            group.append(status.group)
+            raw_size = status.length
+            size.append(raw_size)
+            tmp_size_scaled, tmp_unit = convert_to_largest_unit(
+                raw_size, "B", scale=1024
+            )
+            size_scaled.append(tmp_size_scaled)
+            unit.append(tmp_unit)
+            date.append(status.modificationTime)
+            name.append(path)
+        return LsFormat(
+            permissions=permissions,
+            owner=owner,
+            group=group,
+            size=size,
+            size_scaled=size_scaled,
+            size_unit=unit,
+            date=date,
+            name=name,
+        )
 
-    def status(self, path: str) -> dict:
+    def status(self, path: str) -> Any:
         return self.fs.status(path)
 
     def mkdir(self, path: str) -> None:
