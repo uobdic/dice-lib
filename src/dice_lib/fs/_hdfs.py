@@ -1,99 +1,98 @@
 import os
 import sys
-from typing import List, Optional, Tuple
+from typing import Any, List, Optional, Tuple
 
 from plumbum import local
 from pyarrow.fs import HadoopFileSystem
+import xml.etree.ElementTree as ET
 
 from ..user import current_user
+from ..logger import log
 from ._base import FileSystem, LsFormat
 
 
-def _maybe_set_hadoop_classpath() -> None:
-    """from https://github.com/apache/arrow/blob/master/python/pyarrow/hdfs.py"""
-    import re
-
-    if re.search(r"hadoop-common[^/]+.jar", os.environ.get("CLASSPATH", "")):
-        return
-
-    if "HADOOP_HOME" in os.environ:
-        if sys.platform != "win32":
-            classpath = _derive_hadoop_classpath(os.environ["HADOOP_HOME"])
-        else:
-            hadoop_bin = "{}/bin/hadoop".format(os.environ["HADOOP_HOME"])
-            classpath = _hadoop_classpath_glob(hadoop_bin)
-    else:
-        classpath = _hadoop_classpath_glob("hadoop")
-
-    os.environ["CLASSPATH"] = classpath
+CONF = "/etc/hadoop/conf/hdfs-site.xml"
 
 
-def _derive_hadoop_classpath(hadoop_home: str) -> str:
+def __get_namenodes() -> list[str]:
+    """
+    Get the list of namenodes from the HDFS configuration file.
+    """
 
-    find = local["find"]
-    find_jars = find["-L", hadoop_home, "-name", "hadoop-*.jar"]
-    xargs = local["xargs"]
-    jars_cmd = find_jars | xargs["echo"]
-    jars = jars_cmd()
-    jars = jars.replace(" ", ":")
-    jars = jars.rstrip("\n")
+    tree = ET.parse(CONF)
+    root = tree.getroot()
+    namenodes = []
 
-    hadoop_conf = (
-        os.environ["HADOOP_CONF_DIR"]
-        if "HADOOP_CONF_DIR" in os.environ
-        else "/etc/hadoop/conf"
-    )
+    for prop in root.findall("property"):
+        name = prop.find("name")
+        if name is None:
+            continue
+        name_str = str(name.text)
 
-    return str((hadoop_conf + ":").encode("utf-8") + jars.encode("utf-8"))
+        if name_str.startswith("dfs.namenode.http-address"):
+            value = prop.find("value")
+            if value is None:
+                continue
+            namenodes.append(str(value.text))
+    return namenodes
 
 
-def _hadoop_classpath_glob(hadoop_bin: str) -> str:
-    hadoop = local[hadoop_bin]
-    hadoop_classpath = hadoop["classpath", "--glob"]
-    return str(hadoop_classpath())
+def get_hdfs_client(user: str) -> Any:
+    """Retrieving the HDFS client to execute operations on HDFS."""
+    import pyhdfs
+
+    namenodes = __get_namenodes()
+    log.debug("Connecting to HDFS via %s", namenodes)
+    client = pyhdfs.HdfsClient(namenodes, user_name=user)  # can throw AssertionError
+    return client
 
 
 class HDFS(FileSystem):
+    protocol: str = "hdfs://"
+
     def __init__(
         self,
-        hdfs_host: str = "default",
-        hdfs_port: int = 8020,
-        hdfs_user: Optional[str] = None,
+        user: Optional[str] = None,
     ):
-        self.hdfs_host = hdfs_host
-        self.hdfs_port = hdfs_port
-        self.hdfs_user = current_user() if hdfs_user is None else hdfs_user
-        _maybe_set_hadoop_classpath()
-        self.hdfs_fs = HadoopFileSystem(host=hdfs_host, port=hdfs_port)
-        self._protocol = "hdfs://"
+        self.user = current_user() if user is None else user
+        self.fs = get_hdfs_client(self.user)
 
-    def _setup_env(self) -> None:
-        import os
-
-        if "CLASSPATH" in os.environ:
-            return
-
-    def _check_config(self) -> None:
-        if self.hdfs_host is None or self.hdfs_port is None or self.hdfs_user is None:
-            raise Exception("HDFS configuration is not set")
 
     def size_of_path(self, path: str) -> Tuple[str, int, float, str]:
-        ...
+        cs = self.fs.content_summary(path)
+        total = cs.space_consumed
+        total_scaled, unit = convert_to_largest_unit(total, "B", scale=1024)
+        return str(path), total, total_scaled, unit
 
     def size_of_paths(self, paths: List[str]) -> List[Tuple[str, int, float, str]]:
-        ...
+        return [self.size_of_path(path) for path in paths]
 
     def get_owner(self, pathstr: str) -> str:
-        ...
+        status = self.status(pathstr)
+        return status.owner
 
     def ls(self, path: str) -> LsFormat:
-        ...
+        return self.fs.listdir(path)
+
+    def status(self, path: str) -> dict:
+        return self.fs.status(path)
 
     def mkdir(self, path: str) -> None:
-        ...
+        self.fs.mkdirs(path)
 
     def rm(self, path: str) -> None:
-        ...
+        log.debug("Removing %s", path)
+        self.fs.delete(path)
 
     def rm_recursive(self, path: str) -> None:
-        ...
+        log.debug("Removing %s", path)
+        self.fs.delete(path, recursive=True)
+
+    def copy(self, src: str, dest: str) -> None:
+        pass
+
+    def copy_recursive(self, src: str, dest: str) -> None:
+        pass
+
+    def move(self, src: str, dest: str) -> None:
+        pass
