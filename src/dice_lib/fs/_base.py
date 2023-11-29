@@ -33,6 +33,9 @@ class LsFormat:
             }
         )
 
+    def to_json(self) -> str:
+        return self.to_pandas().to_json()
+
     def __repr__(self) -> str:
         return str(self.to_pandas().__repr__())
 
