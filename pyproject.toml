@@ -31,7 +31,7 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
-    "Development Status :: 1 - Planning",
+    "Development Status :: 4 - Beta",
 ]
 
 
@@ -86,7 +86,7 @@ all = true
 
 [tool.mypy]
 files = "src"
-python_version = "3.7"
+python_version = "3.9"
 warn_unused_configs = true
 
 disallow_any_generics = true
