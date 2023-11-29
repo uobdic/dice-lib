@@ -1,15 +1,10 @@
-import os
-import sys
+import xml.etree.ElementTree as ET
 from typing import Any, List, Optional, Tuple
 
-from plumbum import local
-from pyarrow.fs import HadoopFileSystem
-import xml.etree.ElementTree as ET
 
-from ..user import current_user
 from ..logger import log
+from ..user import current_user
 from ._base import FileSystem, LsFormat
-
 
 CONF = "/etc/hadoop/conf/hdfs-site.xml"
 
@@ -56,7 +51,6 @@ class HDFS(FileSystem):
     ):
         self.user = current_user() if user is None else user
         self.fs = get_hdfs_client(self.user)
-
 
     def size_of_path(self, path: str) -> Tuple[str, int, float, str]:
         cs = self.fs.content_summary(path)

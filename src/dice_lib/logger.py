@@ -1,5 +1,6 @@
-from fasthep_logging import get_logger
 import logging
+
+from fasthep_logging import get_logger
 
 APP_LOGGER_NAME = "DICE::LIB"
 
