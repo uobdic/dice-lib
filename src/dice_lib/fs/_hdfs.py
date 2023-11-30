@@ -1,3 +1,4 @@
+import os
 import xml.etree.ElementTree as ET
 from typing import Any, List, Optional, Tuple
 
@@ -69,6 +70,7 @@ class HDFS(FileSystem):
         return str(status.owner)
 
     def ls(self, path: str) -> LsFormat:
+        full_path = path
         paths = self.fs.listdir(path)
         permissions = []
         owner = []
@@ -79,7 +81,7 @@ class HDFS(FileSystem):
         date = []
         name = []
         for path in paths:
-            status = self.fs.status(path)
+            status = self.status(os.path.join(full_path, path))
             permissions.append(status.permission)
             owner.append(status.owner)
             group.append(status.group)
@@ -104,7 +106,7 @@ class HDFS(FileSystem):
         )
 
     def status(self, path: str) -> Any:
-        return self.fs.status(path)
+        return self.fs.get_file_status(path)
 
     def mkdir(self, path: str) -> None:
         self.fs.mkdirs(path)
