@@ -45,6 +45,7 @@ dependencies = [
     "pandas",
     "paramiko",
     "plumbum",
+    "pydantic",
     "pyhdfs",
     "typing_extensions >=3.7; python_version<'3.8'",
 ]
@@ -88,6 +89,9 @@ all = true
 files = "src"
 python_version = "3.9"
 warn_unused_configs = true
+plugins = [
+    "pydantic.mypy"
+]
 
 disallow_any_generics = true
 disallow_subclassing_any = true

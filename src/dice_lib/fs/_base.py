@@ -1,13 +1,12 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, List, Tuple
 
 import pandas as pd
+from pydantic import BaseModel
 
 
-@dataclass
-class LsFormat:
+class LsFormat(BaseModel):
     permissions: List[str]
     owner: List[str]
     group: List[str]
@@ -32,9 +31,6 @@ class LsFormat:
                 "name": self.name,
             }
         )
-
-    def to_json(self) -> str:
-        return str(self.to_pandas().to_json())
 
     def __repr__(self) -> str:
         return str(self.to_pandas().__repr__())

@@ -8,15 +8,14 @@ from ._gridftp import GridFTPFileSystem
 from ._hdfs import HDFS
 from ._posix import PosixFileSystem
 from ._s3 import S3FileSystem
-from ._xrootd import XrootDFileSystem
 
-FACTORIES: Dict[str, Type[FileSystem]] = {
-    "davs://": DavixFileSystem,
+FACTORIES: dict[str, Type[FileSystem]] = {
+    # "davs://": DavixFileSystem,
     "hdfs://": HDFS,
-    "gsiftp://": GridFTPFileSystem,
+    # "gsiftp://": GridFTPFileSystem,
     "file://": PosixFileSystem,
-    "s3://": S3FileSystem,
-    "root://": XrootDFileSystem,
+    # "s3://": S3FileSystem,
+    # "root://": XrootDFileSystem,
     "Default": PosixFileSystem,
 }
 
