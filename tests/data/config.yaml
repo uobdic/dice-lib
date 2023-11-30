@@ -42,7 +42,7 @@ computing_grid:
         webdav: davs://xrootd.phy.bris.ac.uk:1094
       root_dir: "/xrootd"
   FTS_SERVERS:
-  - fts3-pilot.cern.ch:8446
+    - fts3-pilot.cern.ch:8446
 
 storage:
   hdfs:
@@ -50,7 +50,9 @@ storage:
     remove_mount_for_native_access: true
     extras:
       HDFS_FUSE_MOUNT: "/hdfs"
-      FSTAB_ENTRY: "hadoop-fuse-dfs#dfs://hdfs_service /hdfs fuse allow_other,ro,rdbuffer=1310720 0 0"
+      FSTAB_ENTRY:
+        "hadoop-fuse-dfs#dfs://hdfs_service /hdfs fuse
+        allow_other,ro,rdbuffer=1310720 0 0"
       INSTALL_INSTRUCTIONS:
         HADOOP_TARBALL_URL: "http://www.hdfgroup.org/ftp/HDF5/current/src/hadoop-0.20.2.tar.gz"
         CONFIG_TARBALL_URL: "http://www.hdfgroup.org/ftp/HDF5/current/src/hadoop-0.20.2-dev-config.tar.gz"
@@ -80,14 +82,14 @@ storage:
   nfs:
     protocol: "nfs://"
     mounts:
-    - "/software"
-    - "/users"
-    - "/usersc"
+      - "/software"
+      - "/users"
+      - "/usersc"
   local:
     protocol: "file://"
     mounts:
-    - "/storage"
-    - "/scratch"
+      - "/storage"
+      - "/scratch"
 
 glossary:
   CE: Computing Element
@@ -122,20 +124,19 @@ site_info:
       cvmfs_public_key: "/etc/cvmfs/keys/desy.de.pub"
       cvmfs_server_url: http://grid-cvmfs-one.desy.de:8000/cvmfs/@fqrn@;http://cvmfs-stratum-one.cern.ch:8000/cvmfs/@fqrn@;http://cvmfs-egi.gridpp.rl.ac.uk:8000/cvmfs/@fqrn@
   supported_vos:
-  - alice
-  - atlas
-  - cms
-  - dune
-  - dteam
-  - gridpp
-  - ilc
-  - lhcb
-  - lsst
-  - lz
-  - mu3e.org
-  - ops
-  - vo.southgrid.ac.uk
-
+    - alice
+    - atlas
+    - cms
+    - dune
+    - dteam
+    - gridpp
+    - ilc
+    - lhcb
+    - lsst
+    - lz
+    - mu3e.org
+    - ops
+    - vo.southgrid.ac.uk
 
 node_info:
   service_accounts: service_accounts
@@ -156,7 +157,7 @@ node_info:
   switch: gatekeeper
   hardware_raid: true
   position_in_rack: n/a
-  comments: ''
+  comments: ""
   rack: 8
   managed_network: true
   accounting_scale_factor: 2

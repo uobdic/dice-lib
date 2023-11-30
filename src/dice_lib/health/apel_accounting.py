@@ -1,7 +1,9 @@
-from typing import Dict, List, Tuple
+from __future__ import annotations
 
 import requests
 from bs4 import BeautifulSoup
+
+from ..logger import log
 
 ACCOUNTING_URL_SYNC = (
     "http://goc-accounting.grid-support.ac.uk/rss/{site_name}_Sync.html"
@@ -11,7 +13,7 @@ ACCOUNTING_URL_TEST = (
 )
 
 
-def _get_accounting_data(url: str) -> List[Dict[str, str]]:
+def _get_accounting_data(url: str) -> list[dict[str, str]]:
     """Get accounting data from the given URL."""
     response = requests.get(url)
     if response.status_code != 200:
@@ -28,7 +30,7 @@ def _get_accounting_data(url: str) -> List[Dict[str, str]]:
     return data
 
 
-def check_apel_publication_test(site_name: str) -> Tuple[bool, str]:
+def check_apel_publication_test(site_name: str) -> tuple[bool, str]:
     test_column = "Publication  Status"
     data = _get_accounting_data(ACCOUNTING_URL_TEST.format(site_name=site_name))
     test_result = data[0][test_column]
@@ -38,7 +40,7 @@ def check_apel_publication_test(site_name: str) -> Tuple[bool, str]:
     return ("OK" in test_result and days_ago < 3), test_result
 
 
-def check_apel_sync_data(site_name: str) -> Tuple[bool, str]:
+def check_apel_sync_data(site_name: str) -> tuple[bool, str]:
     test_column = "Synchronisation  Status"
     data = _get_accounting_data(ACCOUNTING_URL_SYNC.format(site_name=site_name))
     latest_test_result = data[0][test_column]
@@ -59,8 +61,8 @@ if __name__ == "__main__":
 
     pub_test, pub_test_msg = check_apel_publication_test(site_name)
     msg = "OK" if pub_test else "NOT OK: " + pub_test_msg
-    print(f"Publication test status: {msg}")
+    log.info(f"Publication test status: {msg}")
 
     sync_test, sync_test_msg = check_apel_sync_data(site_name)
     msg = "OK" if sync_test else "NOT OK: " + sync_test_msg
-    print(f"Synchronisation test status: {msg}")
+    log.info(f"Synchronisation test status: {msg}")

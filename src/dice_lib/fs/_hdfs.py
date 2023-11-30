@@ -1,6 +1,8 @@
-import os
+from __future__ import annotations
+
 import xml.etree.ElementTree as ET
-from typing import Any, List, Optional, Tuple
+from pathlib import Path
+from typing import Any
 
 import pyhdfs
 
@@ -39,8 +41,7 @@ def get_hdfs_client(user: str) -> Any:
     """Retrieving the HDFS client to execute operations on HDFS."""
     namenodes = __get_namenodes()
     log.debug("Connecting to HDFS via %s", namenodes)
-    client = pyhdfs.HdfsClient(namenodes, user_name=user)  # can throw AssertionError
-    return client
+    return pyhdfs.HdfsClient(namenodes, user_name=user)  # can throw AssertionError
 
 
 class HDFS(FileSystem):
@@ -49,18 +50,18 @@ class HDFS(FileSystem):
 
     def __init__(
         self,
-        user: Optional[str] = None,
+        user: str | None = None,
     ):
         self.user = current_user() if user is None else user
         self.fs = get_hdfs_client(self.user)
 
-    def size_of_path(self, path: str) -> Tuple[str, int, float, str]:
+    def size_of_path(self, path: str) -> tuple[str, int, float, str]:
         cs = self.fs.content_summary(path)
         total = cs.space_consumed
         total_scaled, unit = convert_to_largest_unit(total, "B", scale=1024)
         return str(path), total, total_scaled, unit
 
-    def size_of_paths(self, paths: List[str]) -> List[Tuple[str, int, float, str]]:
+    def size_of_paths(self, paths: list[str]) -> list[tuple[str, int, float, str]]:
         return [self.size_of_path(path) for path in paths]
 
     def get_owner(self, pathstr: str) -> str:
@@ -81,7 +82,8 @@ class HDFS(FileSystem):
         date = []
         name = []
         for path in paths:
-            status = self.status(os.path.join(full_path, path))
+            full_path = str(Path(full_path) / Path(path))
+            status = self.status(full_path)
             permissions.append(status.permission)
             owner.append(status.owner)
             group.append(status.group)

@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from omegaconf import OmegaConf
 
@@ -29,7 +31,7 @@ class StorageElement:
     name: str
     status: str
     type: str
-    endpoints: Dict[str, str]
+    endpoints: dict[str, str]
     root_dir: str
 
 
@@ -37,19 +39,19 @@ class StorageElement:
 class ComputingGrid:
     site_name: str
     cms_site_name: str
-    computing_elements: List[ComputingElement]
-    storage_elements: List[StorageElement]
-    FTS_SERVERS: List[str]
+    computing_elements: list[ComputingElement]
+    storage_elements: list[StorageElement]
+    FTS_SERVERS: list[str]
 
 
 @dataclass
 class Storage:
-    mounts: List[str]
-    binaries: Optional[Dict[str, str]]
-    env: Optional[Dict[str, str]]
-    extras: Optional[Dict[str, Any]]
-    protocol: Optional[str] = "file://"
-    remove_mount_for_native_access: Optional[bool] = False
+    mounts: list[str]
+    binaries: dict[str, str] | None
+    env: dict[str, str] | None
+    extras: dict[str, Any] | None
+    protocol: str | None = "file://"
+    remove_mount_for_native_access: bool | None = False
 
 
 @dataclass
@@ -63,21 +65,19 @@ class LoginNode:
 class DiceConfig:
     cluster_name: str
     documentation: str
-    login_nodes: List[LoginNode]
+    login_nodes: list[LoginNode]
     computing_grid: ComputingGrid
-    storage: Dict[str, Storage]
-    glossary: Dict[str, str]
-    site_info: Dict[str, Any]
-    node_info: Dict[str, Any]
+    storage: dict[str, Storage]
+    glossary: dict[str, str]
+    site_info: dict[str, Any]
+    node_info: dict[str, Any]
 
 
 def load_config(config_file: str = DEFAULT_DICE_CONFIG_PATH) -> Any:
     path = Path(config_file)
     if not path.exists():
-        raise FileNotFoundError(
-            f"DICE config, {config_file}, does not exist. Please contact dice-admin"
-        )
+        msg = f"DICE config, {config_file}, does not exist. Please contact dice-admin"
+        raise FileNotFoundError(msg)
     schema = OmegaConf.structured(DiceConfig)
     conf = OmegaConf.load(path)
-    merged_conf = OmegaConf.merge(schema, conf)
-    return merged_conf
+    return OmegaConf.merge(schema, conf)

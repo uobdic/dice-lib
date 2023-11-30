@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pathlib import Path
 
 from omegaconf import OmegaConf
@@ -7,7 +9,7 @@ import dice_lib._config as config
 FOUND_CFG = Path(config.DEFAULT_DICE_CONFIG_PATH).exists()
 
 
-def test_server_status():
+def test_server_status() -> None:
     assert config.ServerStatus.ACTIVE.value == "active"
     assert config.ServerStatus.RETIRED.value == "retired"
     assert config.ServerStatus.COMMISSIONING.value == "commissioning"
@@ -16,7 +18,7 @@ def test_server_status():
     assert config.ServerStatus.ONLINE.value == "online"
 
 
-def test_computing_element():
+def test_computing_element() -> None:
     cfg = OmegaConf.create(
         {
             "status": "active",
@@ -30,7 +32,7 @@ def test_computing_element():
     assert merged_cfg.type == "ce"
 
 
-def test_storage_element():
+def test_storage_element() -> None:
     cfg = OmegaConf.create(
         {
             "status": "active",
@@ -54,7 +56,7 @@ def test_storage_element():
     assert merged_cfg.root_dir == "/dpm/phy.bris.ac.uk/home"
 
 
-def test_computing_grid():
+def test_computing_grid() -> None:
     cfg = OmegaConf.create(
         {
             "site_name": "TEST",
@@ -110,7 +112,7 @@ def test_computing_grid():
     assert len(merged_cfg.FTS_SERVERS) == 2
 
 
-def test_storage():
+def test_storage() -> None:
     cfg = OmegaConf.create(
         {
             "mounts": ["/start/path", "/end/path"],
@@ -125,7 +127,7 @@ def test_storage():
     assert merged_cfg.env == {"X509_USER_PROXY": "/tmp/x509_proxy"}
 
 
-def test_storage_from_config(config_path):
+def test_storage_from_config(config_path: str) -> None:
     cfg = OmegaConf.load(config_path)
     schema = OmegaConf.structured(config.Storage)
     for _, data in cfg.storage.items():
@@ -133,7 +135,7 @@ def test_storage_from_config(config_path):
         assert len(merged_cfg.mounts) >= 1
 
 
-def test_computing_grid_from_config(config_path):
+def test_computing_grid_from_config(config_path: str) -> None:
     cfg = OmegaConf.load(config_path)
     schema = OmegaConf.structured(config.ComputingGrid)
     merged_cfg = OmegaConf.merge(schema, cfg.computing_grid)
@@ -143,7 +145,7 @@ def test_computing_grid_from_config(config_path):
     assert merged_cfg.cms_site_name == "T2_UK_SGrid_Bristol"
 
 
-def test_login_nodes_from_config(config_path):
+def test_login_nodes_from_config(config_path: str) -> None:
     cfg = OmegaConf.load(config_path)
     schema = OmegaConf.structured(config.LoginNode)
     assert len(cfg.login_nodes) == 4
@@ -155,7 +157,7 @@ def test_login_nodes_from_config(config_path):
         ]
 
 
-def test_full_config(config_path):
+def test_full_config(config_path: str) -> None:
     cfg = OmegaConf.load(config_path)
     schema = OmegaConf.structured(config.DiceConfig)
     merged_cfg = OmegaConf.merge(schema, cfg)

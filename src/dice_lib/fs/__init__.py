@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from pathlib import Path
-from typing import Any, Dict, List, Tuple, Type, Union
+from typing import Any, Dict
 
 from .._config import DEFAULT_DICE_CONFIG_PATH, load_config
 from ._base import FileSystem
@@ -9,7 +11,7 @@ from ._hdfs import HDFS
 from ._posix import PosixFileSystem
 from ._s3 import S3FileSystem
 
-FACTORIES: dict[str, Type[FileSystem]] = {
+FACTORIES: dict[str, type[FileSystem]] = {
     # "davs://": DavixFileSystem,
     "hdfs://": HDFS,
     # "gsiftp://": GridFTPFileSystem,
@@ -32,14 +34,14 @@ __all__ = [
 ]
 
 
-def _deduce_fs_from_path(path: Union[str, Path]) -> FileSystem:
+def _deduce_fs_from_path(path: str | Path) -> FileSystem:
     for prefix, factory in FACTORIES.items():
         if str(path).startswith(prefix):
             return factory()
     return FACTORIES["Default"]()
 
 
-def get_mount_settings_from_config(config: Dict[str, Any]) -> MountSettings:
+def get_mount_settings_from_config(config: dict[str, Any]) -> MountSettings:
     mount_settings = {}
     storage = config.get("storage", {})
     for settings in storage.values():
@@ -60,7 +62,7 @@ def get_mount_settings_from_config(config: Dict[str, Any]) -> MountSettings:
     return mount_settings
 
 
-def prepare_paths(paths: List[str], mount_settings: MountSettings) -> List[str]:
+def prepare_paths(paths: list[str], mount_settings: MountSettings) -> list[str]:
     """
     1. Remove trailing slashes from paths
     2. lookup file system mounts
@@ -70,15 +72,15 @@ def prepare_paths(paths: List[str], mount_settings: MountSettings) -> List[str]:
     processed_paths = [path.rstrip("/") for path in paths]
     for mount, settings in mount_settings.items():
         for path in processed_paths:
-            original_path = path
+            processed_path = path
             if path.startswith(mount):
                 protocol = settings.get("protocol", "file://")
                 remove_mount_for_native_access = settings.get(
                     "remove_mount_for_native_access", False
                 )
                 if remove_mount_for_native_access:
-                    path = path[len(mount) :]
-                processed_paths[processed_paths.index(original_path)] = protocol + path
+                    processed_path = path[len(mount) :]
+                processed_paths[processed_paths.index(path)] = protocol + processed_path
     return processed_paths
 
 
@@ -92,7 +94,7 @@ class FSClient:
         fs = _deduce_fs_from_path(pathstr)
         return fs.get_owner(pathstr)
 
-    def size_of_paths(self, paths: List[str]) -> List[Tuple[str, int, float, str]]:
+    def size_of_paths(self, paths: list[str]) -> list[tuple[str, int, float, str]]:
         paths = prepare_paths(paths, self.mount_settings)
         fs = _deduce_fs_from_path(paths[0])
         return fs.size_of_paths(paths)

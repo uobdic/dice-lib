@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from itertools import count
 from typing import Iterable, Iterator
 
@@ -9,13 +11,16 @@ def as_range(iterable: Iterable[int]) -> str:
     items = list(iterable)
     if len(items) > 1:
         return f"{items[0]}-{items[-1]}"
-    else:
-        return f"{items[0]}"
+    return f"{items[0]}"
 
 
-def groupby_range(x: int, c: Iterator[int] = count()) -> int:
+def groupby_range(x: int, c: Iterator[int] | None) -> int:
+    if c is None:
+        c = count()
     return next(c) - x
 
 
-def groupby_inverse_range(x: int, c: Iterator[int] = count()) -> int:
+def groupby_inverse_range(x: int, c: Iterator[int] | None = None) -> int:
+    if c is None:
+        c = count()
     return x - next(c)

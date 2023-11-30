@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 DEFAULT_DATE_FORMAT = "%Y-%m-%d"
 DEFAULT_TIME_FORMAT = "%H:%M:%S"
 

@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, field
-from typing import Callable, Dict, List, Optional
+from typing import Callable
 
 OUTPUT_PROCESSING_FUNCTIONS = {
     "noop": lambda x: x,
@@ -13,11 +15,11 @@ OUTPUT_PROCESSING_FUNCTIONS = {
 @dataclass
 class HostCommand:
     command: str
-    parameters: List[str] = field(default_factory=list)
+    parameters: list[str] = field(default_factory=list)
     default_processing_function: Callable[[str], str] = field(
         repr=False, default=OUTPUT_PROCESSING_FUNCTIONS["strip_final_newline"]
     )
-    output_processing: Optional[List[Callable[[str], str]]] = field(
+    output_processing: list[Callable[[str], str]] | None = field(
         repr=False, default=None
     )
 
@@ -31,8 +33,8 @@ class PuppetCommand(HostCommand):
     def __init__(
         self,
         command: str,
-        parameters: Optional[List[str]] = None,
-        output_processing: Optional[List[Callable[[str], str]]] = None,
+        parameters: list[str] | None = None,
+        output_processing: list[Callable[[str], str]] | None = None,
     ):
         puppet_command = "puppet"
         puppet_parameters = ["agent", command] + (parameters or [])
@@ -46,8 +48,8 @@ class FacterCommand(HostCommand):
     def __init__(
         self,
         command: str,
-        parameters: Optional[List[str]] = None,
-        output_processing: Optional[List[Callable[[str], str]]] = None,
+        parameters: list[str] | None = None,
+        output_processing: list[Callable[[str], str]] | None = None,
     ):
         facter_command = "facter"
         facter_parameters = [command] + (parameters or [])
@@ -56,7 +58,7 @@ class FacterCommand(HostCommand):
         )
 
 
-HOST_PROPERTIES: Dict[str, HostCommand] = {
+HOST_PROPERTIES: dict[str, HostCommand] = {
     "hostname": HostCommand(command="hostname", parameters=["-s"]),
     "fqdn": HostCommand(command="hostname", parameters=["-f"]),
     "ip_addresses": HostCommand(
@@ -115,8 +117,8 @@ FACTER_COMMANDS = {
 
 
 def execute_remote_commands(
-    hostname: str, username: str, commands: Dict[str, HostCommand]
-) -> Dict[str, str]:
+    hostname: str, username: str, commands: dict[str, HostCommand]
+) -> dict[str, str]:
     """
     Executes a dictionary of commands on a remote host.
     Returns a dictionary of outputs of these commands.
@@ -151,7 +153,7 @@ def current_fqdn() -> str:
     return socket.getfqdn()
 
 
-def execute_local_commands(commands: Dict[str, HostCommand]) -> Dict[str, str]:
+def execute_local_commands(commands: dict[str, HostCommand]) -> dict[str, str]:
     """
     Executes a dictionary of commands on a local host.
     Returns a dictionary of outputs of these commands.

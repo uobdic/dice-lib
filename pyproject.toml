@@ -110,7 +110,7 @@ all = true
 
 
 [tool.mypy]
-files = "src"
+files = ["src", "tests"]
 python_version = "3.9"
 warn_unused_configs = true
 plugins = [
