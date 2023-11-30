@@ -79,6 +79,9 @@ HOST_PROPERTIES: Dict[str, HostCommand] = {
             OUTPUT_PROCESSING_FUNCTIONS["split_unique_join"],
         ],
     ),
+    "service_tag": HostCommand(
+        command="dmidecode", parameters=["-s", "system-serial-number"]
+    ),
 }
 
 PUPPET_COMMANDS = {
@@ -107,6 +110,7 @@ FACTER_COMMANDS = {
     "position_in_rack": FacterCommand(command="node_info.position_in_rack"),
     "comments": FacterCommand(command="node_info.comments"),
     "linked_service_tsm": FacterCommand(command="node_info.linked_service_tsm"),
+    "purchase_date": FacterCommand(command="node_info.purchase_date"),
 }
 
 
