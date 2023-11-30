@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+import socket
 from dataclasses import dataclass, field
 from typing import Callable
+
+from plumbum import local
+from plumbum.machines.paramiko_machine import ParamikoMachine
 
 OUTPUT_PROCESSING_FUNCTIONS = {
     "noop": lambda x: x,
@@ -14,6 +18,8 @@ OUTPUT_PROCESSING_FUNCTIONS = {
 
 @dataclass
 class HostCommand:
+    """A command to be executed on a host"""
+
     command: str
     parameters: list[str] = field(default_factory=list)
     default_processing_function: Callable[[str], str] = field(
@@ -30,6 +36,8 @@ class HostCommand:
 
 @dataclass
 class PuppetCommand(HostCommand):
+    """A command to be executed on a host using Puppet's agent"""
+
     def __init__(
         self,
         command: str,
@@ -45,6 +53,8 @@ class PuppetCommand(HostCommand):
 
 @dataclass
 class FacterCommand(HostCommand):
+    """A command to be executed on a host using Facter"""
+
     def __init__(
         self,
         command: str,
@@ -132,8 +142,6 @@ def execute_remote_commands(
           "fqdn": "<result of 'hostname -f' command>",
        }
     """
-    from plumbum.machines.paramiko_machine import ParamikoMachine
-
     remote = ParamikoMachine(hostname, user=username)
     results = {}
     for name, command in commands.items():
@@ -148,8 +156,6 @@ def execute_remote_commands(
 
 def current_fqdn() -> str:
     """Returns fully-qualified domain main (FQDN) of current machine"""
-    import socket
-
     return socket.getfqdn()
 
 
@@ -167,7 +173,6 @@ def execute_local_commands(commands: dict[str, HostCommand]) -> dict[str, str]:
           "fqdn": "<result of 'hostname -f' command>",
        }
     """
-    from plumbum import local
 
     results = {}
     for name, command in commands.items():

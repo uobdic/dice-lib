@@ -15,9 +15,10 @@ ACCOUNTING_URL_TEST = (
 
 def _get_accounting_data(url: str) -> list[dict[str, str]]:
     """Get accounting data from the given URL."""
-    response = requests.get(url)
+    response = requests.get(url, timeout=30)
     if response.status_code != 200:
-        raise RuntimeError("Failed to get accounting data from %s" % url)
+        err_msg = f"Failed to get accounting data from {url}"
+        raise RuntimeError(err_msg)
 
     soup = BeautifulSoup(response.text, "html.parser")
     table = soup.find("table")
@@ -31,6 +32,7 @@ def _get_accounting_data(url: str) -> list[dict[str, str]]:
 
 
 def check_apel_publication_test(site_name: str) -> tuple[bool, str]:
+    """Check if the APEL publication test is up to date."""
     test_column = "Publication  Status"
     data = _get_accounting_data(ACCOUNTING_URL_TEST.format(site_name=site_name))
     test_result = data[0][test_column]
@@ -41,6 +43,7 @@ def check_apel_publication_test(site_name: str) -> tuple[bool, str]:
 
 
 def check_apel_sync_data(site_name: str) -> tuple[bool, str]:
+    """Check if the APEL sync data is up to date."""
     test_column = "Synchronisation  Status"
     data = _get_accounting_data(ACCOUNTING_URL_SYNC.format(site_name=site_name))
     latest_test_result = data[0][test_column]
@@ -57,12 +60,12 @@ if __name__ == "__main__":
     from dice_lib import load_config
 
     config = load_config()
-    site_name = config.site_info.gocdb_name
+    gocdb_site_name = config.site_info.gocdb_name
 
-    pub_test, pub_test_msg = check_apel_publication_test(site_name)
+    pub_test, pub_test_msg = check_apel_publication_test(gocdb_site_name)
     msg = "OK" if pub_test else "NOT OK: " + pub_test_msg
-    log.info(f"Publication test status: {msg}")
+    log.info("Publication test status: %s", msg)
 
-    sync_test, sync_test_msg = check_apel_sync_data(site_name)
+    sync_test, sync_test_msg = check_apel_sync_data(gocdb_site_name)
     msg = "OK" if sync_test else "NOT OK: " + sync_test_msg
-    log.info(f"Synchronisation test status: {msg}")
+    log.info("Synchronisation test status: %s", msg)

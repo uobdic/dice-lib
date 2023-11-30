@@ -10,6 +10,7 @@ from ._gridftp import GridFTPFileSystem
 from ._hdfs import HDFS
 from ._posix import PosixFileSystem
 from ._s3 import S3FileSystem
+from ._xrootd import XrootDFileSystem
 
 FACTORIES: dict[str, type[FileSystem]] = {
     # "davs://": DavixFileSystem,
@@ -30,11 +31,12 @@ __all__ = [
     "GridFTPFileSystem",
     "PosixFileSystem",
     "S3FileSystem",
-    "XRootDFileSystem",
+    "XrootDFileSystem",
 ]
 
 
 def _deduce_fs_from_path(path: str | Path) -> FileSystem:
+    """Deduce the filesystem from the path."""
     for prefix, factory in FACTORIES.items():
         if str(path).startswith(prefix):
             return factory()
@@ -42,6 +44,7 @@ def _deduce_fs_from_path(path: str | Path) -> FileSystem:
 
 
 def get_mount_settings_from_config(config: dict[str, Any]) -> MountSettings:
+    """Get the mount settings from the config."""
     mount_settings = {}
     storage = config.get("storage", {})
     for settings in storage.values():
@@ -85,16 +88,22 @@ def prepare_paths(paths: list[str], mount_settings: MountSettings) -> list[str]:
 
 
 class FSClient:
-    def __init__(self, config_path: str = DEFAULT_DICE_CONFIG_PATH):
+    """FSClient class."""
+
+    # TODO: can we simplify all filesystems to have the same interface?
+
+    def __init__(self, config_path: str = DEFAULT_DICE_CONFIG_PATH) -> None:
         config = load_config(config_path)
         self.mount_settings = get_mount_settings_from_config(config)
 
     def get_owner(self, pathstr: str) -> str:
+        """Get the owner of a given path."""
         pathstr = prepare_paths([pathstr], self.mount_settings)[0]
         fs = _deduce_fs_from_path(pathstr)
         return fs.get_owner(pathstr)
 
     def size_of_paths(self, paths: list[str]) -> list[tuple[str, int, float, str]]:
+        """Get the size of a given path."""
         paths = prepare_paths(paths, self.mount_settings)
         fs = _deduce_fs_from_path(paths[0])
         return fs.size_of_paths(paths)

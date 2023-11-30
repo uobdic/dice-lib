@@ -15,12 +15,14 @@ def as_range(iterable: Iterable[int]) -> str:
 
 
 def groupby_range(x: int, c: Iterator[int] | None) -> int:
+    """From https://codereview.stackexchange.com/q/5196"""
     if c is None:
         c = count()
     return next(c) - x
 
 
 def groupby_inverse_range(x: int, c: Iterator[int] | None = None) -> int:
+    """From https://codereview.stackexchange.com/q/5196"""
     if c is None:
         c = count()
     return x - next(c)

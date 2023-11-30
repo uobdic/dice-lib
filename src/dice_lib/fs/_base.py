@@ -9,6 +9,8 @@ from pydantic import BaseModel
 
 
 class LsFormat(BaseModel):
+    """A standard format for the output of the list function for different filesystems."""
+
     permissions: list[str]
     owner: list[str]
     group: list[str]
@@ -19,8 +21,7 @@ class LsFormat(BaseModel):
     name: list[str]
 
     def to_pandas(self) -> pd.DataFrame:
-        import pandas as pd
-
+        """Converts the LsFormat to a pandas DataFrame."""
         return pd.DataFrame(
             {
                 "permissions": self.permissions,
@@ -38,10 +39,13 @@ class LsFormat(BaseModel):
         return str(self.to_pandas().__repr__())
 
     def to_list(self) -> Any:
+        """Converts the LsFormat to a list."""
         return self.to_pandas().to_numpy().tolist()
 
 
 class FileSystem(ABC):
+    """Abstract class for filesystems."""
+
     _protocol: str = "file://"
 
     @abstractmethod
@@ -58,36 +62,36 @@ class FileSystem(ABC):
 
     @abstractmethod
     def size_of_paths(self, paths: list[str]) -> list[tuple[str, int, float, str]]:
-        ...
+        """Returns a list of tuples of (path, size_in_bytes, size_in_largest_unit, largest_unit) for a given list of paths."""
 
     @abstractmethod
     def get_owner(self, pathstr: str) -> str:
-        ...
+        """Returns the owner of a given path."""
 
     @abstractmethod
     def ls(self, path: str) -> LsFormat:
-        ...
+        """Returns a list of files in the given path."""
 
     @abstractmethod
     def mkdir(self, path: str) -> None:
-        ...
+        """Creates a directory at the given path."""
 
     @abstractmethod
     def rm(self, path: str) -> None:
-        ...
+        """Removes the file at the given path."""
 
     @abstractmethod
     def rm_recursive(self, path: str) -> None:
-        ...
+        """Removes the directory at the given path and all its contents."""
 
     @abstractmethod
     def copy(self, src: str, dest: str) -> None:
-        ...
+        """Copies the file at the given source path to the given destination path."""
 
     @abstractmethod
     def copy_recursive(self, src: str, dest: str) -> None:
-        ...
+        """Copies the directory at the given source path to the given destination path recursively."""
 
     @abstractmethod
     def move(self, src: str, dest: str) -> None:
-        ...
+        """Moves the file at the given source path to the given destination path."""

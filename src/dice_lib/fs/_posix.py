@@ -13,6 +13,8 @@ from ._base import FileSystem, LsFormat
 
 
 class PosixFileSystem(FileSystem):
+    """Class for filesystems that use the POSIX standard."""
+
     protocol: str = "file://"
 
     def __init__(self) -> None:
