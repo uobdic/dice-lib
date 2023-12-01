@@ -95,7 +95,7 @@ def test_computing_grid() -> None:
                     "root_dir": "/dpm/phy.bris.ac.uk/home",
                 },
             ],
-            "FTS_SERVERS": [
+            "fts_servers": [
                 "fts1.lcg.cscs.ch",
                 "fts2.lcg.cscs.ch",
             ],
@@ -109,7 +109,7 @@ def test_computing_grid() -> None:
     assert merged_cfg.computing_elements[0].status == "active"
     assert merged_cfg.computing_elements[0].type == "ce"
     assert merged_cfg.computing_elements[1].status == "retired"
-    assert len(merged_cfg.FTS_SERVERS) == 2
+    assert len(merged_cfg.fts_servers) == 2
 
 
 def test_storage() -> None:

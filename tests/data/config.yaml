@@ -41,7 +41,7 @@ computing_grid:
         xrootd: root://xrootd.phy.bris.ac.uk:1094/
         webdav: davs://xrootd.phy.bris.ac.uk:1094
       root_dir: "/xrootd"
-  FTS_SERVERS:
+  fts_servers:
     - fts3-pilot.cern.ch:8446
 
 storage:
