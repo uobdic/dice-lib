@@ -40,7 +40,7 @@ dependencies = [
     "beautifulsoup4 < 5",
     "dnspython>=2.2.0",
     "fasthep-logging",
-    "htcondor<23",
+    "htcondor>=23",
     "omegaconf>=2.1.2",
     "pandas",
     "paramiko",
