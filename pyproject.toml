@@ -53,9 +53,11 @@ dependencies = [
 [project.optional-dependencies]
 test = [
     "pytest >=6",
+    "pytest-cov >=3",
 ]
 dev = [
     "pytest >=6",
+    "pytest-cov >=3",
 ]
 docs = [
   "sphinx>=7.0",
