@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from datetime import datetime
 from pathlib import Path
-from typing import Callable, List, Tuple
+from typing import Callable
 
 from plumbum import local
 from plumbum.commands.base import BoundCommand
@@ -11,6 +13,8 @@ from ._base import FileSystem, LsFormat
 
 
 class PosixFileSystem(FileSystem):
+    """Class for filesystems that use the POSIX standard."""
+
     protocol: str = "file://"
 
     def __init__(self) -> None:
@@ -39,14 +43,14 @@ class PosixFileSystem(FileSystem):
             owner = "unknown"
         return owner
 
-    def size_of_path(self, path: str) -> Tuple[str, int, float, str]:
+    def size_of_path(self, path: str) -> tuple[str, int, float, str]:
         path = self._remove_protocol(path)
         total, _ = self._size_cmd(path).split()
         total = int(total)
         total_scaled, unit = convert_to_largest_unit(total, "B", scale=1024)
         return str(path), total, total_scaled, unit
 
-    def size_of_paths(self, paths: List[str]) -> List[Tuple[str, int, float, str]]:
+    def size_of_paths(self, paths: list[str]) -> list[tuple[str, int, float, str]]:
         # TODO: should be able to do this in parallel
         return [self.size_of_path(path) for path in paths]
 
@@ -75,8 +79,8 @@ class PosixFileSystem(FileSystem):
         unit = []
         date = []
         name = []
-        for line in lines:
-            line = line.split()
+        for new_line in lines:
+            line = new_line.split()
             permissions.append(line[0])
             owner.append(line[2])
             group.append(line[3])

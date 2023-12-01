@@ -1,5 +1,9 @@
+from __future__ import annotations
+
 import xml.etree.ElementTree as ET
-from typing import Any, List, Optional, Tuple
+from collections import defaultdict
+from pathlib import Path
+from typing import Any
 
 import pyhdfs
 
@@ -38,73 +42,58 @@ def get_hdfs_client(user: str) -> Any:
     """Retrieving the HDFS client to execute operations on HDFS."""
     namenodes = __get_namenodes()
     log.debug("Connecting to HDFS via %s", namenodes)
-    client = pyhdfs.HdfsClient(namenodes, user_name=user)  # can throw AssertionError
-    return client
+    return pyhdfs.HdfsClient(namenodes, user_name=user)  # can throw AssertionError
 
 
 class HDFS(FileSystem):
+    """Class for HDFS filesystem."""
+
     protocol: str = "hdfs://"
     fs: pyhdfs.HdfsClient
 
     def __init__(
         self,
-        user: Optional[str] = None,
+        user: str | None = None,
     ):
         self.user = current_user() if user is None else user
         self.fs = get_hdfs_client(self.user)
 
-    def size_of_path(self, path: str) -> Tuple[str, int, float, str]:
-        cs = self.fs.content_summary(path)
-        total = cs.space_consumed
+    def size_of_path(self, path: str) -> tuple[str, int, float, str]:
+        cs = self.fs.get_content_summary(path)
+        total = cs.spaceConsumed
         total_scaled, unit = convert_to_largest_unit(total, "B", scale=1024)
         return str(path), total, total_scaled, unit
 
-    def size_of_paths(self, paths: List[str]) -> List[Tuple[str, int, float, str]]:
+    def size_of_paths(self, paths: list[str]) -> list[tuple[str, int, float, str]]:
         return [self.size_of_path(path) for path in paths]
 
     def get_owner(self, pathstr: str) -> str:
-        from pyhdfs import FileStatus
-
-        status: FileStatus = self.status(pathstr)
+        status: pyhdfs.FileStatus = self.status(pathstr)
         return str(status.owner)
 
     def ls(self, path: str) -> LsFormat:
         paths = self.fs.listdir(path)
-        permissions = []
-        owner = []
-        group = []
-        size = []
-        size_scaled = []
-        unit = []
-        date = []
-        name = []
-        for path in paths:
-            status = self.fs.status(path)
-            permissions.append(status.permission)
-            owner.append(status.owner)
-            group.append(status.group)
+        listing: dict[str, Any] = defaultdict(list)
+        for relative_path in paths:
+            full_path = str(Path(path) / Path(relative_path))
+            status = self.status(full_path)
+            listing["permissions"].append(status.permission)
+            listing["owner"].append(status.owner)
+            listing["group"].append(status.group)
             raw_size = status.length
-            size.append(raw_size)
+            listing["size"].append(raw_size)
             tmp_size_scaled, tmp_unit = convert_to_largest_unit(
                 raw_size, "B", scale=1024
             )
-            size_scaled.append(tmp_size_scaled)
-            unit.append(tmp_unit)
-            date.append(status.modificationTime)
-            name.append(path)
-        return LsFormat(
-            permissions=permissions,
-            owner=owner,
-            group=group,
-            size=size,
-            size_scaled=size_scaled,
-            size_unit=unit,
-            date=date,
-            name=name,
-        )
+            listing["size_scaled"].append(tmp_size_scaled)
+            listing["size_unit"].append(tmp_unit)
+            listing["date"].append(status.modificationTime)
+            listing["name"].append(full_path)
+        return LsFormat(**listing)
 
     def status(self, path: str) -> Any:
-        return self.fs.status(path)
+        """Returns the status of a file or directory."""
+        return self.fs.get_file_status(path)
 
     def mkdir(self, path: str) -> None:
         self.fs.mkdirs(path)

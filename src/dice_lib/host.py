@@ -1,5 +1,11 @@
+from __future__ import annotations
+
+import socket
 from dataclasses import dataclass, field
-from typing import Callable, Dict, List, Optional
+from typing import Callable
+
+from plumbum import local
+from plumbum.machines.paramiko_machine import ParamikoMachine
 
 OUTPUT_PROCESSING_FUNCTIONS = {
     "noop": lambda x: x,
@@ -12,12 +18,14 @@ OUTPUT_PROCESSING_FUNCTIONS = {
 
 @dataclass
 class HostCommand:
+    """A command to be executed on a host"""
+
     command: str
-    parameters: List[str] = field(default_factory=list)
+    parameters: list[str] = field(default_factory=list)
     default_processing_function: Callable[[str], str] = field(
         repr=False, default=OUTPUT_PROCESSING_FUNCTIONS["strip_final_newline"]
     )
-    output_processing: Optional[List[Callable[[str], str]]] = field(
+    output_processing: list[Callable[[str], str]] | None = field(
         repr=False, default=None
     )
 
@@ -28,11 +36,13 @@ class HostCommand:
 
 @dataclass
 class PuppetCommand(HostCommand):
+    """A command to be executed on a host using Puppet's agent"""
+
     def __init__(
         self,
         command: str,
-        parameters: Optional[List[str]] = None,
-        output_processing: Optional[List[Callable[[str], str]]] = None,
+        parameters: list[str] | None = None,
+        output_processing: list[Callable[[str], str]] | None = None,
     ):
         puppet_command = "puppet"
         puppet_parameters = ["agent", command] + (parameters or [])
@@ -43,11 +53,13 @@ class PuppetCommand(HostCommand):
 
 @dataclass
 class FacterCommand(HostCommand):
+    """A command to be executed on a host using Facter"""
+
     def __init__(
         self,
         command: str,
-        parameters: Optional[List[str]] = None,
-        output_processing: Optional[List[Callable[[str], str]]] = None,
+        parameters: list[str] | None = None,
+        output_processing: list[Callable[[str], str]] | None = None,
     ):
         facter_command = "facter"
         facter_parameters = [command] + (parameters or [])
@@ -56,7 +68,7 @@ class FacterCommand(HostCommand):
         )
 
 
-HOST_PROPERTIES: Dict[str, HostCommand] = {
+HOST_PROPERTIES: dict[str, HostCommand] = {
     "hostname": HostCommand(command="hostname", parameters=["-s"]),
     "fqdn": HostCommand(command="hostname", parameters=["-f"]),
     "ip_addresses": HostCommand(
@@ -78,6 +90,9 @@ HOST_PROPERTIES: Dict[str, HostCommand] = {
         output_processing=[
             OUTPUT_PROCESSING_FUNCTIONS["split_unique_join"],
         ],
+    ),
+    "service_tag": HostCommand(
+        command="dmidecode", parameters=["-s", "system-serial-number"]
     ),
 }
 
@@ -107,12 +122,13 @@ FACTER_COMMANDS = {
     "position_in_rack": FacterCommand(command="node_info.position_in_rack"),
     "comments": FacterCommand(command="node_info.comments"),
     "linked_service_tsm": FacterCommand(command="node_info.linked_service_tsm"),
+    "purchase_date": FacterCommand(command="node_info.purchase_date"),
 }
 
 
 def execute_remote_commands(
-    hostname: str, username: str, commands: Dict[str, HostCommand]
-) -> Dict[str, str]:
+    hostname: str, username: str, commands: dict[str, HostCommand]
+) -> dict[str, str]:
     """
     Executes a dictionary of commands on a remote host.
     Returns a dictionary of outputs of these commands.
@@ -126,8 +142,6 @@ def execute_remote_commands(
           "fqdn": "<result of 'hostname -f' command>",
        }
     """
-    from plumbum.machines.paramiko_machine import ParamikoMachine
-
     remote = ParamikoMachine(hostname, user=username)
     results = {}
     for name, command in commands.items():
@@ -142,12 +156,10 @@ def execute_remote_commands(
 
 def current_fqdn() -> str:
     """Returns fully-qualified domain main (FQDN) of current machine"""
-    import socket
-
     return socket.getfqdn()
 
 
-def execute_local_commands(commands: Dict[str, HostCommand]) -> Dict[str, str]:
+def execute_local_commands(commands: dict[str, HostCommand]) -> dict[str, str]:
     """
     Executes a dictionary of commands on a local host.
     Returns a dictionary of outputs of these commands.
@@ -161,7 +173,6 @@ def execute_local_commands(commands: Dict[str, HostCommand]) -> Dict[str, str]:
           "fqdn": "<result of 'hostname -f' command>",
        }
     """
-    from plumbum import local
 
     results = {}
     for name, command in commands.items():

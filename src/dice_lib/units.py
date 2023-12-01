@@ -1,9 +1,9 @@
-from typing import Tuple
+from __future__ import annotations
 
 
 def convert_to_largest_unit(
     value: float, unit: str, scale: float = 1000.0
-) -> Tuple[float, str]:
+) -> tuple[float, str]:
     """Converts value to largest unit of the same type.
     Largest unit is the largest unit where value < scale
 

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from ._config import load_config
 from .glossary import GLOSSARY
 
