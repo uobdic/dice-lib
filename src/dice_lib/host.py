@@ -125,6 +125,8 @@ FACTER_COMMANDS = {
     "purchase_date": FacterCommand(command="node_info.purchase_date"),
 }
 
+HOST_INFO_PROPERTIES = {**HOST_PROPERTIES, **PUPPET_COMMANDS, **FACTER_COMMANDS}
+
 
 def execute_remote_commands(
     hostname: str, username: str, commands: dict[str, HostCommand]
