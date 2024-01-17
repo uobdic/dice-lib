@@ -4,7 +4,7 @@ import socket
 from dataclasses import dataclass, field
 from typing import Callable
 
-from plumbum import local
+from plumbum import CommandNotFound, local
 from plumbum.machines.paramiko_machine import ParamikoMachine
 
 OUTPUT_PROCESSING_FUNCTIONS = {
@@ -174,10 +174,21 @@ def execute_local_commands(commands: dict[str, HostCommand]) -> dict[str, str]:
        {  "hostname": "<result of 'hostname -s' command>",
           "fqdn": "<result of 'hostname -f' command>",
        }
+
+    If a command does not exist, the output will be:
+         {"<command>": "Command not found: <command>"}
     """
 
     results = {}
     for name, command in commands.items():
+        # test if command exists
+        try:
+            local.which(
+                command.command
+            )  # throws plumbum.commands.CommandNotFound if not found
+        except CommandNotFound as e:
+            results[name] = f"Command not found: {e}"
+            continue
         results[name] = local[command.command](*command.parameters)
         results[name] = command.default_processing_function(results[name])
         if command.output_processing:
