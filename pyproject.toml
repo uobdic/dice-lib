@@ -47,6 +47,7 @@ dependencies = [
     "pyarrow",
     "pydantic",
     "pyhdfs",
+    "python-nmap",
 ]
 
 [project.optional-dependencies]
